@@ -11,7 +11,7 @@ namespace Ficha1
         static void Main(string[] args)
         {
 
-            Console.WriteLine("Hello world by HF\n");
+            Console.WriteLine("Hello world by HF 2x\n");
             Console.WriteLine("Hello world by RG\n");
 
             Console.WriteLine("Press ENTER to conntinue...");
