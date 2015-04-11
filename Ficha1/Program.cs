@@ -10,6 +10,12 @@ namespace Ficha1
     {
         static void Main(string[] args)
         {
+
+            Console.WriteLine("Hello world by HF\n");
+
+
+            Console.WriteLine("Press ENTER to conntinue...");
+            Console.Read();
         }
     }
 }
