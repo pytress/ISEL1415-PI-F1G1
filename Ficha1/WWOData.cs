@@ -8,8 +8,8 @@ namespace Ficha1
 {
     class Request
     {
-        protected string query { get; set; }
-        protected string type { get; set; }
+        public string query { get; set; }
+        public string type { get; set; }
     }
 
     class Astronomy
@@ -25,8 +25,8 @@ namespace Ficha1
 
     class WWOData
     {
-        Request req { get; set; }
+        public Request req { get; set; }
         [RestSharp.Deserializers.DeserializeAs(Name = "weather")]
-        WeatherData wData { get; set; }
+        public WeatherData wData { get; set; }
     }
 }

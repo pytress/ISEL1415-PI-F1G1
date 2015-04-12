@@ -57,12 +57,16 @@ namespace Ficha1
             //    rReq.Resource += '?';
             //}
 
-
-
             Console.WriteLine(rClient.BuildUri(rReq));
-            RestResponse rResp = (RestResponse)rClient.Execute(rReq);
-            rRespContent = rResp.Content;
-            Console.WriteLine(rRespContent);
+            //RestResponse rResp = (RestResponse)rClient.Execute(rReq);
+
+            var rResp = rClient.Execute<WWOData>(rReq);
+
+            //rRespContent = rResp.Content;
+            //Console.WriteLine(rRespContent);
+
+            WWOData data = rResp.Data;
+            Console.WriteLine(data.req.type);
         }
     }
 }
