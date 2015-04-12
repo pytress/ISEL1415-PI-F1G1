@@ -74,12 +74,8 @@ namespace Ficha1
     public class Data
     {
         public List<Request> request { get; set; }
-        //[RestSharp.Deserializers.DeserializeAs(Name = "weather")]
         public List<Weather> weather { get; set; }
     }
-
-    public class NewWWOData
-    {
-        public Data data { get; set; }
-    }
 }
+
+

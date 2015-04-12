@@ -40,6 +40,7 @@ namespace Ficha1
         {
             rReq = new RestRequest(API_PATH);
             rReq.RootElement = "data";
+            rReq.RequestFormat = DataFormat.Json;
 
             //Build query string
             rReq.AddQueryParameter("key", API_KEY);
