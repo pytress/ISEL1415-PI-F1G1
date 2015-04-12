@@ -8,7 +8,7 @@ namespace Ficha1
 {
     class Weather
     {
-        const string REQKEY = "local";
+        const string REQ_KEY = "-local";
 
         static void Main(string[] args)
         {
@@ -24,16 +24,19 @@ namespace Ficha1
             */
 
             IArgumentVerifier<string> iav = new MandatoryArgs<string, Dictionary<string, string>>(keyValuePairs);
-            if (!iav.Verify(new string[] { REQKEY })) // TODO: allow any case (case insensitive)
-                throw new NotImplementedException();
+            //IArgumentVerifier<string> iav = new WWOMandatoryArgs<string>(keyValuePairs);
+            if (!iav.Verify(new string[] { REQ_KEY })) // TODO: allow any case (case insensitive)
+                throw new ApplicationException();
 
             WWOClient client = new WWOClient(keyValuePairs); //implementar tipo WWORequest
             client.RequestData();
             
+            /*
             WeatherData wData = client.ReturnedData();
             Histogram hist = new Histogram();
             hist.Present(Console);
-
+            */
+             
             Console.WriteLine("Press ENTER to continue...");
             Console.Read();
         }

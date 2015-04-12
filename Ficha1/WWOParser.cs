@@ -10,7 +10,7 @@ namespace Ficha1
     {
         const char DELIMITER = '=';
 
-        Dictionary<string, string> Parse(string[] args)
+        public Dictionary<string, string> Parse(string[] args)
         {
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
 
