@@ -12,6 +12,7 @@ namespace Ficha1
         const string SCHEMA = "http://";
         const string HOST = "api.worldweatheronline.com";
         const string WWO_API_PATH = "free/v2/past-weather.ashx";
+        const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
         static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
 
         private string localValue;
