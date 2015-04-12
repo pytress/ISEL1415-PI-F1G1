@@ -13,6 +13,7 @@ namespace Ficha1
         const string HOST = "api.worldweatheronline.com";
         const string API_PATH = "free/v2/past-weather.ashx";
         const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
+        const string FORMAT = "json";
         static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
 
         private string localValue;
@@ -38,8 +39,14 @@ namespace Ficha1
         public void RequestData()
         {
             rReq = new RestRequest(API_PATH);
+
+            //Build query string
             rReq.AddQueryParameter("key", API_KEY);
-            rReq.AddQueryParameter("q", "Lisbon");
+            rReq.AddQueryParameter("q", localValue);
+            rReq.AddQueryParameter("format", FORMAT);
+            rReq.AddQueryParameter("date", "2015-04-10");
+            rReq.AddQueryParameter("enddate", "2015-04-11");
+            //rReq.AddQueryParameter("tp", "24");
 
             //rReq.AddParameter
             //if (startDateValue != null)
@@ -53,9 +60,9 @@ namespace Ficha1
 
 
             Console.WriteLine(rClient.BuildUri(rReq));
-            //var rResp = rClient.Execute(rReq);
             RestResponse rResp = (RestResponse)rClient.Execute(rReq);
             rRespContent = rResp.Content;
+            Console.WriteLine(rRespContent);
         }
     }
 }
