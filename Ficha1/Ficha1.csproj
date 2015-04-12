@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Histogram.cs" />
     <Compile Include="NewWWOData.cs" />
     <Compile Include="WWOClient.cs" />
     <Compile Include="IFilter.cs" />
