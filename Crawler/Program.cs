@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ficha1
+namespace Crawler
 {
-    interface IFilter
+    class Program
     {
+        static void Main(string[] args)
+        {
+        }
     }
 }

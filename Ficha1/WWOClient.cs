@@ -40,7 +40,7 @@ namespace Ficha1
         {
             rReq = new RestRequest(API_PATH);
             rReq.RootElement = "data";
-            rReq.RequestFormat = DataFormat.Json;
+            //rReq.RequestFormat = DataFormat.Json; //TODO: unnecessary?
 
             //Build query string
             rReq.AddQueryParameter("key", API_KEY);
@@ -59,7 +59,7 @@ namespace Ficha1
             //    rReq.Resource += '?';
             //}
 
-            Console.WriteLine(rClient.BuildUri(rReq));
+            Console.WriteLine(rClient.BuildUri(rReq)); //DEBUG
             //RestResponse rResp = (RestResponse)rClient.Execute(rReq);
 
             var rResp = rClient.Execute<Data>(rReq);

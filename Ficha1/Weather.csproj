@@ -45,9 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Histogram.cs" />
-    <Compile Include="NewWWOData.cs" />
+    <Compile Include="WWOData.cs" />
     <Compile Include="WWOClient.cs" />
-    <Compile Include="IFilter.cs" />
     <Compile Include="MandatoryArgs.cs" />
     <Compile Include="IArgumentVerifier.cs" />
     <Compile Include="WWOParser.cs" />
