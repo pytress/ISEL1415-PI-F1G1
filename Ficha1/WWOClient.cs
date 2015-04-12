@@ -39,6 +39,7 @@ namespace Ficha1
         public void RequestData()
         {
             rReq = new RestRequest(API_PATH);
+            rReq.RootElement = "data";
 
             //Build query string
             rReq.AddQueryParameter("key", API_KEY);
@@ -60,13 +61,15 @@ namespace Ficha1
             Console.WriteLine(rClient.BuildUri(rReq));
             //RestResponse rResp = (RestResponse)rClient.Execute(rReq);
 
-            var rResp = rClient.Execute<WWOData>(rReq);
+            var rResp = rClient.Execute<NewWWOData>(rReq);
 
-            //rRespContent = rResp.Content;
-            //Console.WriteLine(rRespContent);
+            rRespContent = rResp.Content;
+            Console.WriteLine(rRespContent);
 
-            WWOData data = rResp.Data;
-            Console.WriteLine(data.req.type);
+            NewWWOData wwoData = new NewWWOData();
+            wwoData = rResp.Data;
+            Console.WriteLine(wwoData.data);
+            Console.WriteLine(wwoData.data.request);
         }
     }
 }

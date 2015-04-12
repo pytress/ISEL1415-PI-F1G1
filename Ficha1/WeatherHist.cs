@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ficha1
 {
-    class Weather
+    class WeatherHist
     {
         const string REQ_KEY = "-local";
 
