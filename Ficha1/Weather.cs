@@ -31,7 +31,7 @@ namespace Ficha1
             if (!iav.Verify(new string[] { REQ_KEY })) // TODO: allow any case (case insensitive)
                 throw new ApplicationException();
 
-            WWOClient client = new WWOClient(keyValuePairs); //implementar tipo WWORequest
+            WWOClient client = new WWOClient(keyValuePairs);
             client.RequestData();
             
             /*

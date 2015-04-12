@@ -11,7 +11,7 @@ namespace Ficha1
     {
         const string SCHEMA = "http://";
         const string HOST = "api.worldweatheronline.com";
-        const string WWO_API_PATH = "free/v2/past-weather.ashx";
+        const string API_PATH = "free/v2/past-weather.ashx";
         const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
         static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
 
@@ -37,17 +37,24 @@ namespace Ficha1
 
         public void RequestData()
         {
-            rReq = new RestRequest(WWO_API_PATH + "?q={location}", Method.GET);
-            rReq.AddUrlSegment("location", localValue);
+            rReq = new RestRequest(API_PATH);
+            rReq.AddQueryParameter("key", API_KEY);
+            rReq.AddQueryParameter("q", "Lisbon");
+
             //rReq.AddParameter
-            if (startDateValue != null)
-            {
-            }
-            if (endDateValue != null)
-            {
-                rReq.Resource += '?';
-            }
-            var rResp = rClient.Execute(rReq);
+            //if (startDateValue != null)
+            //{
+            //}
+            //if (endDateValue != null)
+            //{
+            //    rReq.Resource += '?';
+            //}
+
+
+
+            Console.WriteLine(rClient.BuildUri(rReq));
+            //var rResp = rClient.Execute(rReq);
+            RestResponse rResp = (RestResponse)rClient.Execute(rReq);
             rRespContent = rResp.Content;
         }
     }
