@@ -13,6 +13,9 @@ namespace Ficha1
         static void Main(string[] args)
         {
 
+            //TODO remove hardcoded args
+            args = new String[] {"-local=Lisbon"};
+
             IParser<Dictionary<string, string>> iParser = new WWOParser();
 
             Dictionary<string, string> keyValuePairs = iParser.Parse(args);
