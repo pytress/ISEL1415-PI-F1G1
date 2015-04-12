@@ -61,15 +61,15 @@ namespace Ficha1
             Console.WriteLine(rClient.BuildUri(rReq));
             //RestResponse rResp = (RestResponse)rClient.Execute(rReq);
 
-            var rResp = rClient.Execute<NewWWOData>(rReq);
+            var rResp = rClient.Execute<Data>(rReq);
 
             rRespContent = rResp.Content;
             Console.WriteLine(rRespContent);
 
-            NewWWOData wwoData = new NewWWOData();
+            Data wwoData = new Data();
             wwoData = rResp.Data;
-            Console.WriteLine(wwoData.data);
-            Console.WriteLine(wwoData.data.request);
+            Console.WriteLine(wwoData.request);
+            Console.WriteLine(wwoData.weather);
         }
     }
 }

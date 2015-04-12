@@ -1,7 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ficha1", "Ficha1.csproj", "{C4837CBC-2A08-48A8-A385-79FC8AA98F18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Histogram", "Histogram\Histogram.csproj", "{B169DB31-D282-42D3-898D-1C5FD7EF7130}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +17,10 @@ Global
 		{C4837CBC-2A08-48A8-A385-79FC8AA98F18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4837CBC-2A08-48A8-A385-79FC8AA98F18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4837CBC-2A08-48A8-A385-79FC8AA98F18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B169DB31-D282-42D3-898D-1C5FD7EF7130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B169DB31-D282-42D3-898D-1C5FD7EF7130}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B169DB31-D282-42D3-898D-1C5FD7EF7130}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B169DB31-D282-42D3-898D-1C5FD7EF7130}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
