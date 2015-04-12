@@ -48,6 +48,7 @@
     <Compile Include="IFilter.cs" />
     <Compile Include="MandatoryArgs.cs" />
     <Compile Include="IArgumentVerifier.cs" />
+    <Compile Include="WWOData.cs" />
     <Compile Include="WWOParser.cs" />
     <Compile Include="IParser.cs" />
     <Compile Include="Weather.cs" />
