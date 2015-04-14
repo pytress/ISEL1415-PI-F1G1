@@ -13,7 +13,7 @@ namespace Ficha1
         const string HOST = "api.worldweatheronline.com";
         const string API_PATH = "free/v2/past-weather.ashx";
         const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
-        const string FORMAT = "json";
+        const string RESP_FORMAT = "json";
         static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
 
         private string localValue;
@@ -45,32 +45,36 @@ namespace Ficha1
             //Build query string
             rReq.AddQueryParameter("key", API_KEY);
             rReq.AddQueryParameter("q", localValue);
-            rReq.AddQueryParameter("format", FORMAT);
-            rReq.AddQueryParameter("date", "2015-04-10");
-            rReq.AddQueryParameter("enddate", "2015-04-11");
-            //rReq.AddQueryParameter("tp", "24");
+            rReq.AddQueryParameter("format", RESP_FORMAT);
+            rReq.AddQueryParameter("date", "2015-01-06");    //DEBUG: for test purposes
+            rReq.AddQueryParameter("enddate", "2015-03-22"); //DEBUG: for test purposes
+            //Este ultimo intervalo, aparentemente resultou no WWOData vazio
+            //rReq.AddQueryParameter("tp", "24"); //DEBUG: for test purposes
 
-            //rReq.AddParameter
-            //if (startDateValue != null)
-            //{
-            //}
-            //if (endDateValue != null)
-            //{
-            //    rReq.Resource += '?';
-            //}
+            /*
+            rReq.AddParameter
+            if (startDateValue != null)
+            {
+            }
+            if (endDateValue != null)
+            {
+                rReq.Resource += '?';
+            }
+            */
 
-            Console.WriteLine(rClient.BuildUri(rReq)); //DEBUG
+            Console.WriteLine(rClient.BuildUri(rReq)); //DEBUG: print request URI
             //RestResponse rResp = (RestResponse)rClient.Execute(rReq);
 
             var rResp = rClient.Execute<Data>(rReq);
 
             rRespContent = rResp.Content;
-            Console.WriteLine(rRespContent);
+            //Console.WriteLine(rRespContent); //DEBUG: print HTTP response body
 
-            Data wwoData = new Data();
-            wwoData = rResp.Data;
-            Console.WriteLine(wwoData.request);
-            Console.WriteLine(wwoData.weather);
+            Data wwoData = rResp.Data;
+            wwoData.ShowContent(); //DEBUG: to see what is the data received
+            //parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)
+            //ao passo que nos testes do proprio site do WWO costuma ser transfer-enconding chunked
+            //parece ainda que o maximo de dias que devolve num unico pedido sao 35 dias
         }
     }
 }
