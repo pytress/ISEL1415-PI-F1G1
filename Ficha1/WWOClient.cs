@@ -25,6 +25,10 @@ namespace Ficha1
         //private RestResponse rResp;
         private string rRespContent;
 
+        /*
+         * Creates instance by matching pair values to correspondent specific keys if they exist
+         * It ignores any other other key value pair
+         */
         public WWOClient(IDictionary<string, string> keyValueArgs)
         {
             localValue = keyValueArgs[validKeys[0]];
@@ -40,32 +44,21 @@ namespace Ficha1
         {
             rReq = new RestRequest(API_PATH);
             rReq.RootElement = "data";
-            //rReq.RequestFormat = DataFormat.Json; //TODO: unnecessary?
+            //rReq.RequestFormat = DataFormat.Json; //TODO: necessary?
 
-            //Build query string
-            rReq.AddQueryParameter("key", API_KEY);
-            rReq.AddQueryParameter("q", localValue);
-            rReq.AddQueryParameter("format", RESP_FORMAT);
-            rReq.AddQueryParameter("date", "2015-01-06");    //DEBUG: for test purposes
-            rReq.AddQueryParameter("enddate", "2015-03-22"); //DEBUG: for test purposes
-            //Este ultimo intervalo, aparentemente resultou no WWOData vazio
+            //Build query string with mandatory parameters
+            rReq.AddQueryParameter("key", API_KEY);        //registered key to access API
+            rReq.AddQueryParameter("q", localValue);       //local mandatory argument
+            rReq.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
             //rReq.AddQueryParameter("tp", "24"); //DEBUG: for test purposes
 
-            /*
-            rReq.AddParameter
-            if (startDateValue != null)
-            {
-            }
-            if (endDateValue != null)
-            {
-                rReq.Resource += '?';
-            }
-            */
+            AddOptionalParameters();
 
             Console.WriteLine(rClient.BuildUri(rReq)); //DEBUG: print request URI
             //RestResponse rResp = (RestResponse)rClient.Execute(rReq);
 
-            var rResp = rClient.Execute<Data>(rReq);
+            var rResp = ExecuteRequest();
+            //Data wwoData = ExecuteRequest(); //Alternativa: passar parte do codigo abaixo para este metodo novo auxiliar
 
             rRespContent = rResp.Content;
             //Console.WriteLine(rRespContent); //DEBUG: print HTTP response body
@@ -75,6 +68,27 @@ namespace Ficha1
             //parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)
             //ao passo que nos testes do proprio site do WWO costuma ser transfer-enconding chunked
             //parece ainda que o maximo de dias que devolve num unico pedido sao 35 dias
+        }
+
+        private IRestResponse<Data> ExecuteRequest()
+        {
+            return rClient.Execute<Data>(rReq);
+        }
+
+        private void AddOptionalParameters()
+        {
+            if (startDateValue != null)                                              //start date is defined
+            {
+                rReq.AddQueryParameter("date", startDateValue);
+                if (endDateValue != null)                                            //and end date is also defined
+                    rReq.AddQueryParameter("enddate", endDateValue);
+            }
+            else                                                                     //start date is not defined
+            {
+                rReq.AddQueryParameter("date", DateTime.Now.ToString("yyyy-MM-dd")); //then start date is current day
+                if (endDateValue != null)                                            //but end date is (the only defined)
+                    rReq.AddQueryParameter("enddate", endDateValue);
+            }
         }
     }
 }

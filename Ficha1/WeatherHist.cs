@@ -13,23 +13,16 @@ namespace Ficha1
         static void Main(string[] args)
         {
 
-            //TODO remove hardcoded args
-            args = new String[] {"-local=Lisbon"};
+            //TODO: remove hardcoded args
+            args = new String[] { "-local=Lisbon", "-startdate=2015-01-06", "-enddate=2015-03-22" }; //DEBUG: for test purposes
+            //NOTE: Este ultimo intervalo, aparentemente resultou no WWOData vazio
 
-            IParser<Dictionary<string, string>> iParser = new WWOParser();
+            IParser<Dictionary<string, string>> parser = new WWOParser();
+            Dictionary<string, string> keyValuePairs = parser.Parse(args);
 
-            Dictionary<string, string> keyValuePairs = iParser.Parse(args);
-
-            //iParser.HasMandatoryArgs(keyValuePairs, new string[] { "local" });
-            /*
-            if (!Verify(dic))
-            throw Exception();
-            */
-
-            IArgumentVerifier<string> iav = new MandatoryArgs<string, Dictionary<string, string>>(keyValuePairs);
-            //IArgumentVerifier<string> iav = new WWOMandatoryArgs<string>(keyValuePairs);
-            if (!iav.Verify(new string[] { REQ_KEY })) // TODO: allow any case (case insensitive)
-                throw new ApplicationException();
+            IArgumentVerifier<string> av = new MandatoryArgs<string, Dictionary<string, string>>(keyValuePairs);
+            if (!av.Verify(new string[] { REQ_KEY })) // TODO: allow any case (case insensitive)
+                throw new ApplicationException(); //TODO: doesn't seam to be appropriate to throw exception
 
             WWOClient client = new WWOClient(keyValuePairs);
             client.RequestData();
