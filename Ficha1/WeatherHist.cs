@@ -12,10 +12,8 @@ namespace Ficha1
 
         static void Main(string[] args)
         {
-
             //TODO: remove hardcoded args
-            args = new String[] { "lixo=?", "-local=Lisbon", "=", /*"-startdate=2015-01-06",*/ "xuxu=9=hy", "-enddate=2015-03-22", "-asq?!"  }; //DEBUG: for test purposes
-            //NOTE: Este ultimo intervalo, aparentemente resultou num WWOData vazio
+            args = new String[] { "lixo=?", "-local=Lisbon", "=", "-enddate=2015-03-22", "xuxu=9=hy", "-startdate=2015-02-16", "-asq?!" }; //DEBUG: for test purposes
 
             IParser<Dictionary<string, string>> parser = new WWOParser();
             Dictionary<string, string> keyValuePairs = parser.Parse(args);
