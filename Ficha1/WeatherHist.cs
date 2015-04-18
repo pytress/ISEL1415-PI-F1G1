@@ -14,15 +14,15 @@ namespace Ficha1
         {
 
             //TODO: remove hardcoded args
-            args = new String[] { "-local=Lisbon", "-startdate=2015-01-06", "-enddate=2015-03-22" }; //DEBUG: for test purposes
-            //NOTE: Este ultimo intervalo, aparentemente resultou no WWOData vazio
+            args = new String[] { "lixo=?", "-local=Lisbon", "=", /*"-startdate=2015-01-06",*/ "xuxu=9=hy", "-enddate=2015-03-22", "-asq?!"  }; //DEBUG: for test purposes
+            //NOTE: Este ultimo intervalo, aparentemente resultou num WWOData vazio
 
             IParser<Dictionary<string, string>> parser = new WWOParser();
             Dictionary<string, string> keyValuePairs = parser.Parse(args);
 
             IArgumentVerifier<string> av = new MandatoryArgs<string, Dictionary<string, string>>(keyValuePairs);
-            if (!av.Verify(new string[] { REQ_KEY })) // TODO: allow any case (case insensitive)
-                throw new ApplicationException(); //TODO: doesn't seam to be appropriate to throw exception
+            if (!av.Verify(new string[] { REQ_KEY })) //TODO: allow any case (case insensitive)
+                throw new ApplicationException();     //TODO: doesn't seem to be appropriate to throw exception; better to alert user
 
             WWOClient client = new WWOClient(keyValuePairs);
             client.RequestData();

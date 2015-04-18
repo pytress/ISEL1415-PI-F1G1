@@ -17,7 +17,7 @@ namespace Ficha1
             foreach (string arg in args)
             {
                 string[] keyValue = arg.Split(DELIMITER);
-                if (keyValue.Length >= 2)                           // TODO: what to do when we get more than 1 equal (=)?
+                if (keyValue.Length >= 2)                           //TODO: what to do when we get none or more than 1 equal (=)? now is disregarding both cases
                     keyValuePairs.Add(keyValue[0], keyValue[1]);
             }
 

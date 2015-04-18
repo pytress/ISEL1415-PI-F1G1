@@ -15,10 +15,12 @@ namespace Ficha1
         const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
         const string RESP_FORMAT = "json";
         static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
+        //static readonly HashSet<string> validKeys2 = new HashSet<string> { "-local", "-startdate", "-enddate" };
 
         private string localValue;
         private string startDateValue;
         private string endDateValue;
+        private IDictionary<string, string> usefullArgPairs;
 
         private RestClient rClient;
         private RestRequest rReq;
@@ -31,6 +33,9 @@ namespace Ficha1
          */
         public WWOClient(IDictionary<string, string> keyValueArgs)
         {
+            usefullArgPairs = keyValueArgs.Where(kVPair => validKeys.Contains(kVPair.Key))
+                                        .ToDictionary(kVPair => kVPair.Key, kVPair => kVPair.Value);
+
             localValue = keyValueArgs[validKeys[0]];
             if (keyValueArgs.ContainsKey(validKeys[1]))
                 startDateValue = keyValueArgs[validKeys[1]];
@@ -48,7 +53,8 @@ namespace Ficha1
 
             //Build query string with mandatory parameters
             rReq.AddQueryParameter("key", API_KEY);        //registered key to access API
-            rReq.AddQueryParameter("q", localValue);       //local mandatory argument
+            //rReq.AddQueryParameter("q", localValue);       //local mandatory argument
+            rReq.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
             rReq.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
             //rReq.AddQueryParameter("tp", "24"); //DEBUG: for test purposes
 
@@ -75,8 +81,9 @@ namespace Ficha1
             return rClient.Execute<Data>(rReq);
         }
 
-        private void AddOptionalParameters()
+        private void AddOptionalParameters() //TODO: the relationship between command line parameter and WWO API parameter strings should be better
         {
+            /*
             if (startDateValue != null)                                              //start date is defined
             {
                 rReq.AddQueryParameter("date", startDateValue);
@@ -88,6 +95,22 @@ namespace Ficha1
                 rReq.AddQueryParameter("date", DateTime.Now.ToString("yyyy-MM-dd")); //then start date is current day
                 if (endDateValue != null)                                            //but end date is (the only defined)
                     rReq.AddQueryParameter("enddate", endDateValue);
+            }
+            */
+
+            string startDate, endDate;
+
+            if (usefullArgPairs.TryGetValue(validKeys[1], out startDate))              //start date is defined
+            {
+                rReq.AddQueryParameter("date", startDate);
+                if (usefullArgPairs.TryGetValue(validKeys[2], out endDate))            //and end date is also defined
+                    rReq.AddQueryParameter("enddate", endDate);
+            }
+            else                                                                     //start date is not defined
+            {
+                rReq.AddQueryParameter("date", DateTime.Now.ToString("yyyy-MM-dd")); //then start date is current day
+                if (usefullArgPairs.TryGetValue(validKeys[2], out endDate))            //but end date is (the only defined)
+                    rReq.AddQueryParameter("enddate", endDate);
             }
         }
     }
