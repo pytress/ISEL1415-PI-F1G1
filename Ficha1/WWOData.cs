@@ -92,4 +92,9 @@ namespace Ficha1
             Console.WriteLine("First day was {0} and last day was {1}; {2} days", firstDay, lastDay, weather.Count);
         }
     }
+
+    public class WeatherData
+    {
+        private List<Data> weatherData;
+    }
 }

@@ -13,7 +13,7 @@ namespace Ficha1
         static void Main(string[] args)
         {
             //TODO: remove hardcoded args
-            args = new String[] { "lixo=?", "-local=Lisbon", "=", "-enddate=2015-03-22", "xuxu=9=hy", "-startdate=2015-02-16", "-asq?!" }; //DEBUG: for test purposes
+            args = new String[] { "lixo=?", "-local=Lisbon", "=", "-enddate=2015-01-22", "xuxu=9=hy", "-startdate=2015-01-17", "-asq?!" }; //DEBUG: for test purposes
 
             IParser<Dictionary<string, string>> parser = new WWOParser();
             Dictionary<string, string> keyValuePairs = parser.Parse(args);
@@ -24,9 +24,9 @@ namespace Ficha1
 
             WWOClient client = new WWOClient(keyValuePairs);
             client.RequestData();
-            
+            WeatherData wData = client.ReturnedData;
+
             /*
-            WeatherData wData = client.ReturnedData();
             Histogram hist = new Histogram();
             hist.Present(Console);
             */

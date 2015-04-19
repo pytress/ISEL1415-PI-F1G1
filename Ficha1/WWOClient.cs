@@ -15,6 +15,7 @@ namespace Ficha1
         const string API_PATH = "free/v2/past-weather.ashx";
         const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
         const string RESP_FORMAT = "json";
+        const int MAX_N_DAYS_PER_REQ = 34;
         static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
         //static readonly HashSet<string> validKeys2 = new HashSet<string> { "-local", "-startdate", "-enddate" };
 
@@ -25,6 +26,8 @@ namespace Ficha1
 
         private RestClient rClient;
         private RestRequest rReq;
+        private WeatherData returnedData;
+        public WeatherData ReturnedData { get { return returnedData; } }
         //private RestResponse rResp;
         //private string rRespContent;
 
@@ -38,7 +41,7 @@ namespace Ficha1
         public WWOClient(IDictionary<string, string> keyValueArgs)
         {
             usefullArgPairs = keyValueArgs.Where(kVPair => validKeys.Contains(kVPair.Key))
-                                        .ToDictionary(kVPair => kVPair.Key, kVPair => kVPair.Value);
+                                          .ToDictionary(kVPair => kVPair.Key, kVPair => kVPair.Value);
 
             /*
             localValue = keyValueArgs[validKeys[0]];
@@ -50,39 +53,61 @@ namespace Ficha1
             rClient = new RestClient(SCHEMA + HOST);
         }
 
+        //NOTA: so disponivel dados de 1-Jul-2008 em diante;
+        //NOTA: exemplo do resultado: { "data": { "error": [ {"msg": "There is no weather data available for the date provided. Past data is available from 1 July, 2008 onwards only." } ] }}
         public void RequestData()
         {
-            rReq = new RestRequest(API_PATH);
-            rReq.RequestFormat = DataFormat.Json; //TODO: necessary?
-            rReq.RootElement = "data";
+            //int nDaysReq = GetNDaysRequested();
+            int nReq = (GetNDaysRequested() + MAX_N_DAYS_PER_REQ - 1) / MAX_N_DAYS_PER_REQ; //number of HTTP request necessary to obtain da data requested
+            Console.WriteLine("Number of requests necessary: {0}", nReq); //DEBUG: show number of requests necessary to obtain all requested data
 
-            //Build query string with mandatory parameters
-            rReq.AddQueryParameter("key", API_KEY);        //registered key to access API
-            //rReq.AddQueryParameter("q", localValue);       //local mandatory argument
-            rReq.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
-            rReq.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
-            //rReq.AddQueryParameter("tp", "24"); //DEBUG: for test purposes
-
-            AddOptionalParameters();
-
-            Console.WriteLine(rClient.BuildUri(rReq)); //DEBUG: print request URI
-            //RestResponse rResp = (RestResponse)rClient.Execute(rReq);
-
-            var rResp = ExecuteRequest();
-            //Data wwoData = ExecuteRequest(); //ALTERNATIVA: passar parte do codigo abaixo para este metodo novo auxiliar
-
-            //rRespContent = rResp.Content; //DEBUG: get HTTP response body
-            //Console.WriteLine(rRespContent); //DEBUG: print HTTP response body
-
-            Data wwoData;
-            if (rResp != null)
+            for (int i = 0; i < nReq; ++i) //many requests as necessary to obtain all requested data
             {
-                wwoData = rResp.Data;
-                wwoData.ShowContent(); //DEBUG: to see what is the data received
+                rReq = new RestRequest(API_PATH);
+                rReq.RequestFormat = DataFormat.Json; //TODO: necessary?
+                rReq.RootElement = "data";
+
+                //Build query string with mandatory parameters
+                rReq.AddQueryParameter("key", API_KEY);        //registered key to access API
+                //rReq.AddQueryParameter("q", localValue);       //local mandatory argument
+                rReq.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
+                rReq.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
+                //rReq.AddQueryParameter("tp", "24"); //DEBUG: for test purposes
+
+                AddOptionalParameters();
+
+                Console.WriteLine(rClient.BuildUri(rReq)); //DEBUG: print request URI
+                //RestResponse rResp = (RestResponse)rClient.Execute(rReq);
+
+                var rResp = ExecuteRequest();
+                //Data wwoData = ExecuteRequest(); //ALTERNATIVA: passar parte do codigo abaixo para este metodo novo auxiliar
+
+                //rRespContent = rResp.Content; //DEBUG: get HTTP response body
+                //Console.WriteLine(rRespContent); //DEBUG: print HTTP response body
+
+                Data wwoData;
+                if (rResp != null)
+                {
+                    wwoData = rResp.Data;
+                    //wwoData.ShowContent(); //DEBUG: to see what is the data received
+                }
+                //parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)
+                //ao passo que nos testes do proprio site do WWO costuma ser transfer-enconding chunked
+                //parece ainda que o maximo de dias que devolve num unico pedido sao 35 dias
             }
-            //parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)
-            //ao passo que nos testes do proprio site do WWO costuma ser transfer-enconding chunked
-            //parece ainda que o maximo de dias que devolve num unico pedido sao 35 dias
+        }
+
+        private int GetNDaysRequested()
+        {
+            string start, end;
+
+            if (!usefullArgPairs.TryGetValue(validKeys[1], out start) || !usefullArgPairs.TryGetValue(validKeys[2], out end))
+                return 1;
+
+            TimeSpan timeSpan = DateTime.Parse(end) - DateTime.Parse(start);
+
+            Console.WriteLine("Calculated number of days (in interval): {0}", timeSpan.Days); //DEBUG: show number of days requested
+            return timeSpan.Days;
         }
 
         private IRestResponse<Data> ExecuteRequest()
@@ -144,18 +169,23 @@ namespace Ficha1
             }
             */
 
-            string startDate, endDate;
+            string start, end;
 
-            if (usefullArgPairs.TryGetValue(validKeys[1], out startDate))            //start date is defined
+            if (usefullArgPairs.TryGetValue(validKeys[1], out start))            //start date is defined
             {
-                rReq.AddQueryParameter("date", startDate);
-                if (usefullArgPairs.TryGetValue(validKeys[2], out endDate))          //and end date is also defined
-                    rReq.AddQueryParameter("enddate", endDate);
+                rReq.AddQueryParameter("date", start);
+                if (usefullArgPairs.TryGetValue(validKeys[2], out end))          //and end date is also defined
+                {
+                    rReq.AddQueryParameter("enddate", end);
+                    //DateTime newStartDate = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ);
+                    usefullArgPairs[validKeys[1]] = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ).ToString("yyyy-MM-dd");
+                    Console.WriteLine("New start date: {0}", usefullArgPairs[validKeys[1]]); //DEBUG: show new start date
+                }
             }
             else                                                                         //start date is not defined
             {
-                if (usefullArgPairs.TryGetValue(validKeys[2], out endDate))              //but end date is (the only defined)
-                    rReq.AddQueryParameter("date", endDate);                             //then end date will be used as the only and start date
+                if (usefullArgPairs.TryGetValue(validKeys[2], out end))              //but end date is (the only defined)
+                    rReq.AddQueryParameter("date", end);                             //then end date will be used as the only and start date
                 else                                                                     //no date whatsoever defined
                     rReq.AddQueryParameter("date", DateTime.Now.ToString("yyyy-MM-dd")); //then start date is current day
             }
