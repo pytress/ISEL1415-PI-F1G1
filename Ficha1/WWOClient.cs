@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Net;
 using RestSharp;
 
@@ -10,14 +10,16 @@ namespace Ficha1
 {
     class WWOClient
     {
-        const string SCHEMA = "http://";
-        const string HOST = "api.worldweatheronline.com";
-        const string API_PATH = "free/v2/past-weather.ashx";
-        const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
-        const string RESP_FORMAT = "json";
-        const int MAX_N_DAYS_PER_REQ = 34;
-        static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
-        //static readonly HashSet<string> validKeys2 = new HashSet<string> { "-local", "-startdate", "-enddate" };
+        private const string SCHEMA = "http://";
+        private const string HOST = "api.worldweatheronline.com";
+        private const string API_PATH = "free/v2/past-weather.ashx";
+        private const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
+        private const string RESP_FORMAT = "json";
+        private const int MAX_N_DAYS_PER_REQ = 35;
+        private const int QRY_PER_SEC_ALLOWED = 5;
+        private const int MS_PAUSE = 1000;
+        private static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
+        //private static readonly HashSet<string> validKeys2 = new HashSet<string> { "-local", "-startdate", "-enddate" };
 
         //private string localValue;
         //private string startDateValue;
@@ -81,7 +83,7 @@ namespace Ficha1
                 Console.WriteLine(rClient.BuildUri(rReq)); //DEBUG: print request URI
                 //RestResponse rResp = (RestResponse)rClient.Execute(rReq);
 
-                var rResp = ExecuteRequest();
+                var rResp = ExecuteRequest(); //VERIFICAR CASOS DE 200 OK COM ERRO NO BODY (caso de datas anteriores a 2008)
                 //Data wwoData = ExecuteRequest(); //ALTERNATIVA: passar parte do codigo abaixo para este metodo novo auxiliar
 
                 //rRespContent = rResp.Content; //DEBUG: get HTTP response body
@@ -94,6 +96,10 @@ namespace Ficha1
                     //wwoData.ShowContent(); //DEBUG: to see what is the data received
                     returnedData.Append(wwoData);
                 }
+
+                if (i % 5 == 0) //to avoid status error 429 Too Many Requests
+                    Thread.Sleep(MS_PAUSE);
+
                 //parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)
                 //ao passo que nos testes do proprio site do WWO costuma ser transfer-enconding chunked
                 //parece ainda que o maximo de dias que devolve num unico pedido sao 35 dias
@@ -108,20 +114,21 @@ namespace Ficha1
                 return 1;
 
             TimeSpan timeSpan = DateTime.Parse(end) - DateTime.Parse(start);
+            int nDays = timeSpan.Days == 0 ? 1 : timeSpan.Days;
 
-            Console.WriteLine("Calculated number of days (in interval): {0}", timeSpan.Days); //DEBUG: show number of days requested
-            return timeSpan.Days;
+            Console.WriteLine("Calculated number of days (in interval): {0}", nDays); //DEBUG: show number of days requested
+            return nDays;
         }
 
         private IRestResponse<Data> ExecuteRequest()
         {
-            rReq.OnBeforeDeserialization = rsp => Console.WriteLine(" ### BANG! Before deserialization. ### "); //DEBUG: test method execution before deserialization
+            //rReq.OnBeforeDeserialization = rsp => Console.WriteLine(" ### BANG! Before deserialization. ### "); //DEBUG: test method execution before deserialization
             var resp = rClient.Execute<Data>(rReq);
 
             Console.WriteLine("Response :: HTTP Status Code = {0}", resp.StatusCode); //DEBUG: show HTTP status code returned by server
 
             if (resp.ResponseStatus == ResponseStatus.Error)
-                if (resp.StatusCode == HttpStatusCode.BadRequest) //i've only checked this case with deserialization error/problem
+                if (resp.StatusCode == HttpStatusCode.BadRequest) //i've only witnessed this case with deserialization error/problem
                 {
                     Console.WriteLine("### MSG: Client error - Bad Request"); //DEBUG
                     reqResultStatus = "400 Bad Request";
@@ -149,8 +156,8 @@ namespace Ficha1
             //resp.ResponseStatus can still got None
             
             //Console.WriteLine("Response :: Content = {0}", resp.Content);
-            Console.WriteLine("Response :: Exception = {0}", resp.ErrorException);
-            Console.WriteLine("Response :: Message = {0}", resp.ErrorMessage);
+            //Console.WriteLine("Response :: Exception = {0}", resp.ErrorException);
+            //Console.WriteLine("Response :: Message = {0}", resp.ErrorMessage);
 
             return resp;
         }
@@ -179,10 +186,18 @@ namespace Ficha1
                 rReq.AddQueryParameter("date", start);
                 if (usefullArgPairs.TryGetValue(validKeys[2], out end))          //and end date is also defined
                 {
-                    rReq.AddQueryParameter("enddate", end);
-                    //DateTime newStartDate = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ);
-                    usefullArgPairs[validKeys[1]] = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ + 1).ToString("yyyy-MM-dd");
-                    Console.WriteLine("New start date: {0}", usefullArgPairs[validKeys[1]]); //DEBUG: show new start date
+                    DateTime partialEndDate = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ - 1); //set new end date to start plus the maximum number of days per request
+                    DateTime partialStartDate = partialEndDate.AddDays(1);                           //set new start date (day before new end date)
+
+                    usefullArgPairs[validKeys[1]] = partialStartDate.ToString("yyyy-MM-dd");         //save new start date to arguments
+                    Console.WriteLine("New start date: {0}", usefullArgPairs[validKeys[1]]);       //DEBUG: show new start date
+                    if (partialEndDate > DateTime.Parse(end))                                        //check end of requeste date interval
+                        rReq.AddQueryParameter("enddate", end);
+                    else
+                    {
+                        rReq.AddQueryParameter("enddate", partialEndDate.ToString("yyyy-MM-dd"));
+                        Console.WriteLine("New end date: {0}", partialEndDate.ToString("yyyy-MM-dd")); //DEBUG: show new start date
+                    }
                 }
             }
             else                                                                         //start date is not defined

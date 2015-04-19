@@ -73,7 +73,10 @@ namespace Ficha1
         public List<Request> request { get; set; }
         public List<Weather> weather { get; set; }
 
-        internal void ShowContent()
+        public string ReferenceLocal { get { return request[0].query; } }
+        public string Date { get { return weather[0].date; } }
+
+        internal void ShowContent() //DEBUG: to show Data content
         {
             string firstDay = null, lastDay = null;
             
@@ -97,11 +100,25 @@ namespace Ficha1
     {
         private List<Data> weatherData;
 
-        public WeatherData() { weatherData = new List<Data>(); }
+        public WeatherData()
+        {
+            weatherData = new List<Data>();
+        }
 
-        internal void Append(Data wwoData)
+        public bool IsEmpty
+        {
+            get { return weatherData.Count == 0 ? true : false; }
+        }
+
+        public void Append(Data wwoData)
         {
             weatherData.Add(wwoData);
+        }
+
+        public IEnumerable<Data> GetDataItems()
+        {
+            foreach (Data data in weatherData)
+                yield return data;
         }
     }
 }
