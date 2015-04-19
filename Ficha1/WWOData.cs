@@ -96,5 +96,12 @@ namespace Ficha1
     public class WeatherData
     {
         private List<Data> weatherData;
+
+        public WeatherData() { weatherData = new List<Data>(); }
+
+        internal void Append(Data wwoData)
+        {
+            weatherData.Add(wwoData);
+        }
     }
 }

@@ -50,10 +50,12 @@ namespace Ficha1
             if (keyValueArgs.ContainsKey(validKeys[2]))
                 endDateValue = keyValueArgs[validKeys[2]];
             */
+
+            returnedData = new WeatherData();
             rClient = new RestClient(SCHEMA + HOST);
         }
 
-        //NOTA: so disponivel dados de 1-Jul-2008 em diante;
+        //NOTA: so disponivel dados de 1-Jul-2008 em diante; agora parece que so de ha 2 meses a esta parte
         //NOTA: exemplo do resultado: { "data": { "error": [ {"msg": "There is no weather data available for the date provided. Past data is available from 1 July, 2008 onwards only." } ] }}
         public void RequestData()
         {
@@ -90,6 +92,7 @@ namespace Ficha1
                 {
                     wwoData = rResp.Data;
                     //wwoData.ShowContent(); //DEBUG: to see what is the data received
+                    returnedData.Append(wwoData);
                 }
                 //parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)
                 //ao passo que nos testes do proprio site do WWO costuma ser transfer-enconding chunked
@@ -178,14 +181,14 @@ namespace Ficha1
                 {
                     rReq.AddQueryParameter("enddate", end);
                     //DateTime newStartDate = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ);
-                    usefullArgPairs[validKeys[1]] = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ).ToString("yyyy-MM-dd");
+                    usefullArgPairs[validKeys[1]] = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ + 1).ToString("yyyy-MM-dd");
                     Console.WriteLine("New start date: {0}", usefullArgPairs[validKeys[1]]); //DEBUG: show new start date
                 }
             }
             else                                                                         //start date is not defined
             {
-                if (usefullArgPairs.TryGetValue(validKeys[2], out end))              //but end date is (the only defined)
-                    rReq.AddQueryParameter("date", end);                             //then end date will be used as the only and start date
+                if (usefullArgPairs.TryGetValue(validKeys[2], out end))                  //but end date is (the only defined)
+                    rReq.AddQueryParameter("date", end);                                 //then end date will be used as the only and start date
                 else                                                                     //no date whatsoever defined
                     rReq.AddQueryParameter("date", DateTime.Now.ToString("yyyy-MM-dd")); //then start date is current day
             }
