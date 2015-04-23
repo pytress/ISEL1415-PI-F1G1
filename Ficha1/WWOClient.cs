@@ -33,8 +33,8 @@ namespace Ficha1
         //private RestResponse rResp;
         //private string rRespContent;
 
-        private string reqResultStatus;
-        public string ReqResultStatus { get { return reqResultStatus; } }
+        private string lastReqResultStatus;
+        public string LastReqResultStatus { get { return lastReqResultStatus; } }
 
         /*
          * Creates instance by matching pair values to correspondent specific keys if they exist
@@ -93,8 +93,11 @@ namespace Ficha1
                 if (rResp != null)
                 {
                     wwoData = rResp.Data;
-                    //wwoData.ShowContent(); //DEBUG: to see what is the data received
-                    returnedData.Append(wwoData);
+                    if (!ErrorInBody(wwoData))
+                    {
+                        //wwoData.ShowContent(); //DEBUG: to see what is the data received
+                        returnedData.Append(wwoData);
+                    }
                 }
 
                 if (i % 5 == 0) //to avoid status error 429 Too Many Requests
@@ -131,7 +134,7 @@ namespace Ficha1
                 if (resp.StatusCode == HttpStatusCode.BadRequest) //i've only witnessed this case with deserialization error/problem
                 {
                     Console.WriteLine("### MSG: Client error - Bad Request"); //DEBUG
-                    reqResultStatus = "400 Bad Request";
+                    lastReqResultStatus = "400 Bad Request";
                     return null;
                 }
                 else
@@ -146,12 +149,12 @@ namespace Ficha1
                 if (resp.StatusCode == HttpStatusCode.OK)
                 {
                     Console.WriteLine("### MSG: Request OK, should have return data."); //DEBUG
-                    reqResultStatus = "200 OK";
+                    lastReqResultStatus = "200 OK";
                 }
                 else
                 {
                     Console.WriteLine("### MSG: {0}", resp.StatusDescription); //DEBUG
-                    reqResultStatus = resp.StatusCode.ToString();
+                    lastReqResultStatus = resp.StatusCode.ToString();
                 }
             //resp.ResponseStatus can still got None
             
@@ -160,6 +163,18 @@ namespace Ficha1
             //Console.WriteLine("Response :: Message = {0}", resp.ErrorMessage);
 
             return resp;
+        }
+
+        private bool ErrorInBody(Data data)
+        {
+            {
+                if (data.error == null)
+                    return false;
+
+                Console.WriteLine("### MSG: Request OK, but no valid data => {0}", data.error.First()); //DEBUG
+                lastReqResultStatus = "404 Not Found";
+                return true;
+            }
         }
 
         private void AddOptionalParameters() //TODO: the relationship between command line parameter and WWO API parameter strings should be better

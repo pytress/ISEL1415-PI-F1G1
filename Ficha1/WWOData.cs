@@ -70,11 +70,13 @@ namespace Ficha1
 
     public class Data
     {
+        public List<string> error { get; set; }
         public List<Request> request { get; set; }
         public List<Weather> weather { get; set; }
 
         public string ReferenceLocal { get { return request[0].query; } }
-        public string Date { get { return weather[0].date; } }
+        public string FirstDate { get { return weather[0].date; } }
+        public string LastDate { get { return weather[weather.Count - 1].date; } }
 
         internal void ShowContent() //DEBUG: to show Data content
         {
