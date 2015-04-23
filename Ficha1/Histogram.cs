@@ -8,6 +8,10 @@ namespace Ficha1
 {
     class Histogram
     {
+        const char TEMP_MIN = '*';
+        const char TEMP_MAX = '#';
+        const char AVG_TEMP = '>';
+
         private class TemperatureOccurences
         {
             internal TemperatureOccurences()
@@ -16,7 +20,7 @@ namespace Ficha1
             }
             internal TemperatureOccurences(int tMin, int tMax)
             {
-                minNOccurences = tMin; maxNOccurences = tMin;
+                minNOccurences = tMin; maxNOccurences = tMax;
             }
 
             private int minNOccurences;
@@ -36,13 +40,10 @@ namespace Ficha1
             }
 
             private int hour;
-            protected int Hour { get { return hour; } }
+            internal int Hour { get { return hour; } }
             private int temperature;
-            protected int Temperature { get { return temperature; } }
+            internal int Temperature { get { return temperature; } }
         }
-
-        const char TEMP_MIN = '*';
-        const char TEMP_MAX = '#';
 
         private string local;
         public string Local { get { return local; } }
@@ -80,7 +81,7 @@ namespace Ficha1
                 if (local != data.ReferenceLocal)
                     throw new ApplicationException("### ERROR: Weather data inconsistent!");
 
-            if (dateFrom == null)                   //the requested start date comes only onithe first (or only) data group
+            if (dateFrom == default(DateTime))      //the requested start date comes only onithe first (or only) data group
                 dateFrom = DateTime.Parse(data.FirstDate);
             dateTo = DateTime.Parse(data.LastDate); //the requested end date is the last one in the last data group
 
@@ -91,6 +92,7 @@ namespace Ficha1
         {
             foreach (Weather w in wList)
             {
+                //Console.WriteLine("Min: {0} | Max: {1}", w.mintempC, w.maxtempC); //DEBUG
                 //FILL INFOBARS
                 if (infoBars.ContainsKey(int.Parse(w.mintempC))) //in case there is already this minimum temperature registered
                     infoBars[int.Parse(w.mintempC)].IncMinOcc();
@@ -116,13 +118,51 @@ namespace Ficha1
         {
             Console.WriteLine("Temperature Histogram for: {0}", DateInterval());
             Console.WriteLine();
-            //foreach (
-            Console.WriteLine("Key: {0} | nMin & nMax: {1} / {2}", infoBars.Last().Key, infoBars.Last().Value.MinNOccurences, infoBars.Last().Value.MaxNOccurences);
+
+            foreach (KeyValuePair<int, TemperatureOccurences> kVElem in infoBars)
+            {
+                Console.Write("{0} | ", kVElem.Key);
+                string str1 = " " + Convert.ToString(kVElem.Value.MinNOccurences);
+                Console.WriteLine(str1.PadLeft(kVElem.Value.MinNOccurences, TEMP_MIN));
+
+                Console.Write("{0} | ", kVElem.Key);
+                string str2 = " " + Convert.ToString(kVElem.Value.MaxNOccurences);
+                Console.WriteLine(str2.PadLeft(kVElem.Value.MaxNOccurences, TEMP_MAX));
+                    //nMin & nMax:
+            }
+
+            Console.WriteLine("");
         }
 
-        private void PresentDayAvgs()
+        private void PresentDayAvgs() //TODO: apresentar algum tipo de referencia à quantidade de temperaturas horarias e/ou ao intervalo entre as mesmas?
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Daily Average Temperature for: {0}", DateInterval());
+            Console.WriteLine();
+
+            foreach (KeyValuePair<DateTime, List<HourlyTemperature>> kVElem in hourlyTempsByDay.Reverse())
+            {
+                Console.Write("{0} | ", kVElem.Key.ToString("yyyy-MM-dd"));
+
+                int avgTemp = Convert.ToInt32(kVElem.Value.Average<HourlyTemperature>(hTemp => hTemp.Temperature));
+                string str = " " + Convert.ToString(avgTemp);
+                
+                Console.WriteLine(str.PadLeft(avgTemp, AVG_TEMP));
+            }
+
+            Console.WriteLine("");
         }
+        /*
+        public static void Main()
+        {
+            string str = "forty-two";
+            char pad = '.';
+
+            Console.WriteLine(str.PadLeft(15, pad));
+            Console.WriteLine(str.PadLeft(2, pad));
+        }
+        // The example displays the following output: 
+        //       ......forty-two 
+        //       forty-two
+        */
     }
 }
