@@ -7,15 +7,15 @@ namespace Crawler
 {
     class CrawlerParser : IParser<CrawlerObject>
     {
-        
-        public CrawlerParser() { 
-            
-        }
+
+        const int nr_of_params = 2; //This parser only execute with an Application that receives 2 arguments (int and URL)
+
 
         public CrawlerObject Parse(string[] args) {
-            CrawlerObject co;
 
-            if (args == null) throw new ApplicationException();
+            CrawlerObject co;
+            if (args == null || args.Length < nr_of_params) throw new ArgumentException();
+            
             else {
                 co = new CrawlerObject();
                 int value;
@@ -31,6 +31,7 @@ namespace Crawler
                 }
 
                 else {
+                    Console.WriteLine("... else ... ERROR!!");
                     throw new ArgumentException();
                 }
 
@@ -38,6 +39,7 @@ namespace Crawler
             
             return co;
         }
+
         
     } //close class
 }

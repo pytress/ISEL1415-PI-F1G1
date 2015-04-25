@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RestSharp;
 
 namespace Crawler
 {
@@ -10,8 +11,8 @@ namespace Crawler
     {
         const string SCHEMA_HTTP = "http://";
         const string SCHEMA_HTTPS = "https://";
-        int level;
-        string Url;
+        private RestClient rClient;
+        private RestRequest rReq;
 
 
         static void Main(string[] args)

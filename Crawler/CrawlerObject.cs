@@ -8,10 +8,9 @@ namespace Crawler
 {
     class CrawlerObject
     {
-       
-        public CrawlerObject() {
-            
-        }
+        //dicionário que vai ter como chave uma palavra e como valor associado a ela, vai ser um conjunto de links (URL) onde a mesma se encontra 
+        private IDictionary<string,List<string>> list = new Dictionary<string,List<string>>();
+
 
         public int Level {
             get; set; 
