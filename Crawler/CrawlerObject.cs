@@ -14,7 +14,11 @@ namespace Crawler
         public CrawlerObject(string url,int lvl) {
             Url = url;
             Level= lvl;
-        } 
+        }
+
+        public CrawlerObject() { 
+        
+        }
 
         public int Level {
             get; set; 
@@ -42,8 +46,6 @@ namespace Crawler
              *      5º Por fim, chamamos o Merge Do pai, passando como argumento o dicionário do filho!
              * 
              * */
-        
-
 
         } 
 

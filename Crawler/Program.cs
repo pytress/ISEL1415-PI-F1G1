@@ -18,8 +18,13 @@ namespace Crawler
         static void Main(string[] args)
         {
             Console.Clear();
-            Console.WriteLine("Introduza um Url e um nível de profundidade!\nE.g.--> http://www.abola.pt 2 ");
-            Console.ReadLine();
+        
+            Console.WriteLine("Introduza um Url \n E.g.--> http://www.abola.pt ");
+            string url = Console.ReadLine();
+            Console.WriteLine("Indique o nível de profundidade \n E.g. --> 2");
+            int lvl = Convert.ToInt32(Console.ReadLine());
+
+            ICrawlerObject crawler = new CrawlerObject();
 
             IParser<CrawlerObject> ip = new CrawlerParser();
             CrawlerObject co = ip.Parse(args);

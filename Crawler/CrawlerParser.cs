@@ -17,24 +17,24 @@ namespace Crawler
             if (args == null || args.Length < nr_of_params) throw new ArgumentException();
             
             else {
-                co = new CrawlerObject();
+                string url;
                 int value;
                 if (int.TryParse(args[0], out value)) {
-                    co.Level = value;
-                    co.Url = args[1];
+                    url = args[1];
                 }
 
                 if (int.TryParse(args[1], out value))
                 {
-                    co.Level = value;
-                    co.Url = args[0];
+                    url = args[0];
                 }
                     //qualquer coisa
                 else {
+                    // TODO --> what 
                     Console.WriteLine("... else ... ERROR!!");
                     throw new ArgumentException();
                 }
 
+                co = new CrawlerObject(url, value);
             }
             
             return co;
