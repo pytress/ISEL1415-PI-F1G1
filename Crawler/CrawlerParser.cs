@@ -29,7 +29,7 @@ namespace Crawler
                     co.Level = value;
                     co.Url = args[0];
                 }
-
+                    //qualquer coisa
                 else {
                     Console.WriteLine("... else ... ERROR!!");
                     throw new ArgumentException();
