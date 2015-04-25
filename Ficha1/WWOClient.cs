@@ -15,7 +15,7 @@ namespace Ficha1
         private const string API_PATH = "free/v2/past-weather.ashx";
         private const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
         private const string RESP_FORMAT = "json";
-        private const int MAX_N_DAYS_PER_REQ = 35;
+        private const int MAX_N_DAYS_PER_REQ = 35; //number found by trial
         private const int QRY_PER_SEC_ALLOWED = 5;
         private const int MS_PAUSE = 1000;
         private static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
@@ -100,7 +100,7 @@ namespace Ficha1
                     }
                 }
 
-                if (i % 5 == 0) //to avoid status error 429 Too Many Requests
+                if (i % QRY_PER_SEC_ALLOWED == 0) //to avoid status error 429 Too Many Requests
                     Thread.Sleep(MS_PAUSE);
 
                 //parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)

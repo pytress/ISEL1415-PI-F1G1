@@ -8,9 +8,10 @@ namespace Ficha1
 {
     class Histogram
     {
-        const char TEMP_MIN = '*';
-        const char TEMP_MAX = '#';
-        const char AVG_TEMP = '>';
+        const char TEMP_MIN_CHR = '*';
+        const char TEMP_MAX_CHR = '#';
+        const char AVG_TEMP_CHR = '>';
+        const string TOP = "@";
 
         private class TemperatureOccurences
         {
@@ -55,7 +56,7 @@ namespace Ficha1
             if (dateFrom == dateTo)
                 return dateTo.ToString("yyyy-MM-dd");
             else
-                return "interval from " + dateFrom.ToString("yyyy-MM-dd") + " To " + dateTo.ToString("yyyy-MM-dd");
+                return "interval from " + dateFrom.ToString("yyyy-MM-dd") + " to " + dateTo.ToString("yyyy-MM-dd");
         }
 
         private SortedList<int, TemperatureOccurences> infoBars = new SortedList<int,TemperatureOccurences>();
@@ -121,14 +122,27 @@ namespace Ficha1
 
             foreach (KeyValuePair<int, TemperatureOccurences> kVElem in infoBars)
             {
-                Console.Write("{0} | ", kVElem.Key);
-                string str1 = " " + Convert.ToString(kVElem.Value.MinNOccurences);
-                Console.WriteLine(str1.PadLeft(kVElem.Value.MinNOccurences, TEMP_MIN));
+                string str1 = null, str2 = null;
 
                 Console.Write("{0} | ", kVElem.Key);
-                string str2 = " " + Convert.ToString(kVElem.Value.MaxNOccurences);
-                Console.WriteLine(str2.PadLeft(kVElem.Value.MaxNOccurences, TEMP_MAX));
-                    //nMin & nMax:
+                if (kVElem.Value.MinNOccurences != 0) //cosmetic only
+                    str1 = " ";
+                str1 += Convert.ToString(kVElem.Value.MinNOccurences);
+                Console.WriteLine(str1.PadLeft(kVElem.Value.MinNOccurences * 3, TEMP_MIN_CHR));
+                //else
+                    //Console.WriteLine("");
+                //Console.Write(TOP.PadLeft(kVElem.Value.MinNOccurences, TEMP_MIN_CHR));
+                //Console.WriteLine(kVElem.Value.MinNOccurences);
+
+                Console.Write("{0} | ", kVElem.Key);
+                if (kVElem.Value.MaxNOccurences != 0)
+                    str2 = " ";
+                str2 += Convert.ToString(kVElem.Value.MaxNOccurences);
+                Console.WriteLine(str2.PadLeft(kVElem.Value.MaxNOccurences * 3, TEMP_MAX_CHR)); //multiply by 3 to get more characters (longer line)
+                //Console.Write(TOP.PadLeft(kVElem.Value.MaxNOccurences, TEMP_MAX_CHR));
+                //Console.WriteLine(kVElem.Value.MaxNOccurences);
+
+                //Console.WriteLine("");
             }
 
             Console.WriteLine("");
@@ -146,23 +160,10 @@ namespace Ficha1
                 int avgTemp = Convert.ToInt32(kVElem.Value.Average<HourlyTemperature>(hTemp => hTemp.Temperature));
                 string str = " " + Convert.ToString(avgTemp);
                 
-                Console.WriteLine(str.PadLeft(avgTemp, AVG_TEMP));
+                Console.WriteLine(str.PadLeft(avgTemp, AVG_TEMP_CHR));
             }
 
             Console.WriteLine("");
         }
-        /*
-        public static void Main()
-        {
-            string str = "forty-two";
-            char pad = '.';
-
-            Console.WriteLine(str.PadLeft(15, pad));
-            Console.WriteLine(str.PadLeft(2, pad));
-        }
-        // The example displays the following output: 
-        //       ......forty-two 
-        //       forty-two
-        */
     }
 }
