@@ -17,6 +17,7 @@ namespace Crawler
 
         static void Main(string[] args)
         {
+            Console.Clear();
             Console.WriteLine("Introduza um Url e um nível de profundidade!\nE.g.--> http://www.abola.pt 2 ");
             Console.ReadLine();
 
