@@ -12,8 +12,25 @@ namespace Ficha1
 
         static void Main(string[] args)
         {
+            //Validade args
+            Dictionary<string, string> keyValuePairs = ValidateArgs(args);
+
+            //Instantiate client and request data
+            WWOClient client = new WWOClient(keyValuePairs);
+            //client.RequestData();//TODO remove this
+            client.RequestAsyncData();
+            WeatherData wData = client.ReturnedData;
+
+            //Print Histogram
+            PrintHistogram(wData, client.LastReqResultStatus);
+
+            ConsoleUtils.Pause();
+        }
+
+        static Dictionary<string, string> ValidateArgs(string[] args)
+        {
             //TODO: remove hardcoded args
-            args = new String[] { "lixo=?", "-local=Lisbon", "=", "-enddate=2015-04-22", "xuxu=9=hy", "-startdate=2015-02-22", "-asq?!" }; //DEBUG: for test purposes
+            args = new String[] { "lixo=?", "-local=Lisbon", "=", "-enddate=2015-04-22", "xuxu=9=hy", "-startdate=2015-02-22", "-asq?!" }; //TODO DEBUG: for test purposes
 
             IParser<Dictionary<string, string>> parser = new WWOParser();
             Dictionary<string, string> keyValuePairs = parser.Parse(args);
@@ -22,22 +39,23 @@ namespace Ficha1
             if (!av.Verify(new string[] { REQ_KEY })) //TODO: allow any case (case insensitive)
                 throw new ApplicationException();     //TODO: doesn't seem to be appropriate to throw exception; better to alert user
 
-            WWOClient client = new WWOClient(keyValuePairs);
-            client.RequestData();
+            return keyValuePairs;
+        }
 
-            WeatherData wData = client.ReturnedData;
+        static void PrintHistogram(WeatherData wData, string lastReqResultStatus)
+        {
             if (wData.IsEmpty)
-                Console.WriteLine(" ### MSG: No data returned (Reason: {0})", client.LastReqResultStatus);
+                Console.WriteLine(" ### MSG: No data returned (Reason: {0})", lastReqResultStatus);
             else
             {
-                Console.WriteLine(" ### MSG: Valid data obtained (not necessarilly all data requested)"); //DEBUG
+                Console.WriteLine(" ### MSG: Valid data obtained (not necessarilly all data requested)"); //TODO DEBUG
                 Histogram hist = new Histogram(wData);
                 hist.PresentResults();
             }
-             
-            Console.WriteLine("Press ENTER to continue...");
-            Console.Read();
         }
+
+
+
     }
 }
 /*

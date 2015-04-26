@@ -15,9 +15,10 @@ namespace Ficha1
         private const string API_PATH = "free/v2/past-weather.ashx";
         private const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
         private const string RESP_FORMAT = "json";
-        private const int MAX_N_DAYS_PER_REQ = 35; //number found by trial
+        private const int MAX_N_DAYS_PER_REQ = 5; //number found by trial
         private const int QRY_PER_SEC_ALLOWED = 5;
         private const int MS_PAUSE = 1000;
+        private const int TIMEOUT = 5;
         private static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
         //private static readonly HashSet<string> validKeys2 = new HashSet<string> { "-local", "-startdate", "-enddate" };
 
@@ -27,7 +28,7 @@ namespace Ficha1
         private IDictionary<string, string> usefullArgPairs;
 
         private RestClient rClient;
-        private RestRequest rReq;
+        //private RestRequest rReq;
         private WeatherData returnedData;
         public WeatherData ReturnedData { get { return returnedData; } }
         //private RestResponse rResp;
@@ -57,17 +58,76 @@ namespace Ficha1
             rClient = new RestClient(SCHEMA + HOST);
         }
 
+        public void RequestAsyncData()
+        {
+            //number of HTTP request necessary to obtain the data requested
+            int nReq = (GetNDaysRequested() + MAX_N_DAYS_PER_REQ - 1) / MAX_N_DAYS_PER_REQ;
+
+            //Create list of requests
+            WWOAsyncRequests requestList = new WWOAsyncRequests(nReq);
+
+            for (int i = 0; i < nReq; ++i)
+            {
+                var request = new RestRequest(API_PATH);
+                request.RequestFormat = DataFormat.Json; //TODO: necessary?
+                request.RootElement = "data";
+
+                //Build query string with mandatory parameters
+                request.AddQueryParameter("key", API_KEY);        //registered key to access API
+                request.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
+                request.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
+                AddOptionalParameters(request);
+
+                //to avoid status error 429 Too Many Requests
+                if (i % QRY_PER_SEC_ALLOWED == 0)
+                    Thread.Sleep(MS_PAUSE);
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  THE MAGIC IS HERE :D <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                //Make asynchronous request
+                RestRequestAsyncHandle asyncHandle = null;
+                asyncHandle = rClient.ExecuteAsync<Data>(request, response => {
+                    requestList.AddRequest(asyncHandle, response);
+                });
+            }
+            
+            //Wait for requests to finish
+            Console.WriteLine("Waiting for requests");
+            int count = TIMEOUT;
+            while (!requestList.AllRequestsFinished()) {
+                if (count-- <= 0)
+                    throw new ApplicationException("Timeout. Request are taking too long to complete");
+                Thread.Sleep(MS_PAUSE);
+            };
+
+            //Check if all requests completed successfully
+            //TODO if not ok?
+            if (!requestList.CheckStatusCodes())
+                Console.WriteLine("WARNING: Not every request completed successfully.");
+
+            //Consolidate all responses
+            foreach (RestResponse<Data> r in requestList.RequestDict.Values)
+            {
+                if (!ErrorInBody(r.Data))
+                    returnedData.Append(r.Data);
+            }
+
+        }
+
+
+        //TODO: this method was replaced by RequestAsyncData(); remove this one.
         //NOTA: so disponivel dados de 1-Jul-2008 em diante; agora parece que so de ha 2 meses a esta parte
         //NOTA: exemplo do resultado: { "data": { "error": [ {"msg": "There is no weather data available for the date provided. Past data is available from 1 July, 2008 onwards only." } ] }}
         public void RequestData()
         {
-            //int nDaysReq = GetNDaysRequested();
-            int nReq = (GetNDaysRequested() + MAX_N_DAYS_PER_REQ - 1) / MAX_N_DAYS_PER_REQ; //number of HTTP request necessary to obtain da data requested
-            Console.WriteLine("Number of requests necessary: {0}", nReq); //DEBUG: show number of requests necessary to obtain all requested data
+            //number of HTTP request necessary to obtain the data requested
+            int nReq = (GetNDaysRequested() + MAX_N_DAYS_PER_REQ - 1) / MAX_N_DAYS_PER_REQ;
+            
+            //TODO DEBUG: show number of requests necessary to obtain all requested data
+            Console.WriteLine("Number of requests necessary: {0}", nReq); 
 
             for (int i = 0; i < nReq; ++i) //many requests as necessary to obtain all requested data
             {
-                rReq = new RestRequest(API_PATH);
+                var rReq = new RestRequest(API_PATH);
                 rReq.RequestFormat = DataFormat.Json; //TODO: necessary?
                 rReq.RootElement = "data";
 
@@ -78,16 +138,16 @@ namespace Ficha1
                 rReq.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
                 //rReq.AddQueryParameter("tp", "24"); //DEBUG: for test purposes
 
-                AddOptionalParameters();
+                //AddOptionalParameters();
+                AddOptionalParameters(rReq);
 
-                Console.WriteLine(rClient.BuildUri(rReq)); //DEBUG: print request URI
-                //RestResponse rResp = (RestResponse)rClient.Execute(rReq);
+                //TODO DEBUG: print request URI
+                Console.WriteLine(rClient.BuildUri(rReq));
 
-                var rResp = ExecuteRequest(); //VERIFICAR CASOS DE 200 OK COM ERRO NO BODY (caso de datas anteriores a 2008)
-                //Data wwoData = ExecuteRequest(); //ALTERNATIVA: passar parte do codigo abaixo para este metodo novo auxiliar
 
-                //rRespContent = rResp.Content; //DEBUG: get HTTP response body
-                //Console.WriteLine(rRespContent); //DEBUG: print HTTP response body
+                //TODO: VERIFICAR CASOS DE 200 OK COM ERRO NO BODY (caso de datas anteriores a 2008)
+                //ALTERNATIVA: passar parte do codigo abaixo para este metodo novo auxiliar
+                var rResp = ExecuteRequest(rReq);
 
                 Data wwoData;
                 if (rResp != null)
@@ -103,7 +163,7 @@ namespace Ficha1
                 if (i % QRY_PER_SEC_ALLOWED == 0) //to avoid status error 429 Too Many Requests
                     Thread.Sleep(MS_PAUSE);
 
-                //parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)
+                //TODO: parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)
                 //ao passo que nos testes do proprio site do WWO costuma ser transfer-enconding chunked
                 //parece ainda que o maximo de dias que devolve num unico pedido sao 35 dias
             }
@@ -119,16 +179,18 @@ namespace Ficha1
             TimeSpan timeSpan = DateTime.Parse(end) - DateTime.Parse(start);
             int nDays = timeSpan.Days == 0 ? 1 : timeSpan.Days;
 
-            Console.WriteLine("Calculated number of days (in interval): {0}", nDays); //DEBUG: show number of days requested
+            //TODO DEBUG: show number of days requested
+            Console.WriteLine("Calculated number of days (in interval): {0}", nDays); 
             return nDays;
         }
 
-        private IRestResponse<Data> ExecuteRequest()
+        private IRestResponse<Data> ExecuteRequest(RestRequest rReq)
         {
             //rReq.OnBeforeDeserialization = rsp => Console.WriteLine(" ### BANG! Before deserialization. ### "); //DEBUG: test method execution before deserialization
             var resp = rClient.Execute<Data>(rReq);
 
-            Console.WriteLine("Response :: HTTP Status Code = {0}", resp.StatusCode); //DEBUG: show HTTP status code returned by server
+            //TODO DEBUG: show HTTP status code returned by server
+            Console.WriteLine("Response :: HTTP Status Code = {0}", resp.StatusCode);
 
             if (resp.ResponseStatus == ResponseStatus.Error)
                 if (resp.StatusCode == HttpStatusCode.BadRequest) //i've only witnessed this case with deserialization error/problem
@@ -168,16 +230,22 @@ namespace Ficha1
         private bool ErrorInBody(Data data)
         {
             {
-                if (data.error == null)
+                if (data!= null && data.error == null)
                     return false;
 
-                Console.WriteLine("### MSG: Request OK, but no valid data => {0}", data.error.First()); //DEBUG
-                lastReqResultStatus = "404 Not Found";
+                Console.WriteLine("### MSG: Request OK, but no valid data => {0}", 
+                                    data==null?"":data.error.First()); //DEBUG
+                
+                lastReqResultStatus = "404 Not Found"; //TODO ??(HF)
                 return true;
             }
         }
 
-        private void AddOptionalParameters() //TODO: the relationship between command line parameter and WWO API parameter strings should be better
+        /**
+         //TODO: the relationship between command line parameter and WWO API parameter strings should be better
+         */
+        //private void AddOptionalParameters() 
+        private void AddOptionalParameters(RestRequest rReq) 
         {
             /*
             if (startDateValue != null)                                              //start date is defined

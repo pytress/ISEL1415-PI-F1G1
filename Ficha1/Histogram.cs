@@ -70,7 +70,10 @@ namespace Ficha1
 
         internal void PresentResults()
         {
+            ConsoleUtils.Pause();
+            Console.Clear();
             PresentHistogram();
+            ConsoleUtils.Pause();
             PresentDayAvgs();
         }
 
