@@ -8,28 +8,33 @@ namespace Crawler
     class CrawlerParser : IParser<CrawlerObject>
     {
 
-        const int nr_of_params = 2; //This parser only execute with an Application that receives 2 arguments (int and URL)
+        const int NR_OF_PARAMS = 2; //This parser only execute with an Application that receives 2 arguments (int and URL)
 
 
-        public CrawlerObject Parse(string[] args) {
+        public CrawlerObject Parse(string arguments) {
 
             CrawlerObject co;
-            if (args == null || args.Length < nr_of_params) throw new ArgumentException();
+            char[] delimiter = { ' ' };
+            String[] args = arguments.Split(delimiter);
+
+            if (args == null || args.Length < NR_OF_PARAMS) throw new ArgumentException();
             
             else {
                 string url;
                 int value;
                 if (int.TryParse(args[0], out value)) {
                     url = args[1];
+                    if (value < 0) throw new ArgumentException(); //o nivel de profundidade introduzido é menor que 0
                 }
 
-                if (int.TryParse(args[1], out value))
+                else if (int.TryParse(args[1], out value))
                 {
                     url = args[0];
+                    if (value < 0) throw new ArgumentException(); //o nivel de profundidade introduzido é menor que 0
                 }
                     //qualquer coisa
                 else {
-                    // TODO --> what 
+                    // TODO --> what should i do?
                     Console.WriteLine("... else ... ERROR!!");
                     throw new ArgumentException();
                 }

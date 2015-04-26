@@ -19,23 +19,20 @@ namespace Crawler
         {
             Console.Clear();
         
-            Console.WriteLine("Introduza um Url \n E.g.--> http://www.abola.pt ");
-            string url = Console.ReadLine();
-            Console.WriteLine("Indique o nível de profundidade \n E.g. --> 2");
-            int lvl = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Introduza um Url e um nível de profundidade \n E.g.--> http://www.abola.pt 2 ");
+            string arguments = Console.ReadLine();
 
-            ICrawlerObject crawler = new CrawlerObject();
+            IParser<CrawlerObject> parser = new CrawlerParser();
+            CrawlerObject crawler = parser.Parse(arguments);
 
-            IParser<CrawlerObject> ip = new CrawlerParser();
-            CrawlerObject co = ip.Parse(args);
+            crawler.Execute();
+          
+            Console.WriteLine("Indique a palavra a pesquisar");
+            String word = Console.ReadLine();
+            //FindWord ... Get the word that it could be in the dictionary
 
-           //1st - Guardar todas as palavras numa estrutura de dados, com os respectivos links onde elas se encontram
-
-           //2nd - Pedir ao utilizador 1 palavra, e a aplicaçao responder à mesma com todos os links onde a palavra se encontra. (Manter aplicação
-            // sempre a correr de modo que o user possa ir introduzindo várias palavras e a App ir respondendo) 
-
-            Console.WriteLine("Press Enter to continue :)");
-            Console.Read();
+            Console.WriteLine("Press any key to exit :)");
+            Console.ReadKey();
         }
     }
 }

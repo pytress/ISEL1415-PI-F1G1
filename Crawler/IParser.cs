@@ -8,6 +8,6 @@ namespace Crawler
 {
     interface IParser<T>
     {
-        T Parse(string[] args);
+        T Parse(string args);
     }
 }

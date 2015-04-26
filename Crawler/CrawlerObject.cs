@@ -9,15 +9,11 @@ namespace Crawler
     class CrawlerObject
     {
         //dicionário que vai ter como chave uma palavra e como valor associado a ela, vai ser um conjunto de links (URL) onde a mesma se encontra 
-        private IDictionary<string,List<string>> list = new Dictionary<string,List<string>>();
+        private IDictionary<string,List<string>> dict = new Dictionary<string,List<string>>();
 
         public CrawlerObject(string url,int lvl) {
             Url = url;
             Level= lvl;
-        }
-
-        public CrawlerObject() { 
-        
         }
 
         public int Level {
@@ -28,8 +24,8 @@ namespace Crawler
             get;set;
         }
 
-        public IDictionary<string, List<string>> GetList() { 
-            return list; 
+        public IDictionary<string, List<string>> GetDict() { 
+            return dict; 
         }
 
         private void Merge(IDictionary<string,List<string>> list) {
