@@ -15,10 +15,10 @@ namespace Ficha1
         private const string API_PATH = "free/v2/past-weather.ashx";
         private const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
         private const string RESP_FORMAT = "json";
-        private const int MAX_N_DAYS_PER_REQ = 5; //number found by trial
+        private const int MAX_N_DAYS_PER_REQ = 5;
         private const int QRY_PER_SEC_ALLOWED = 5;
         private const int MS_PAUSE = 1000;
-        private const int TIMEOUT = 5;
+        private const int TIMEOUT = 5000;
         private static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
         //private static readonly HashSet<string> validKeys2 = new HashSet<string> { "-local", "-startdate", "-enddate" };
 
@@ -64,7 +64,7 @@ namespace Ficha1
             int nReq = (GetNDaysRequested() + MAX_N_DAYS_PER_REQ - 1) / MAX_N_DAYS_PER_REQ;
 
             //Create list of requests
-            WWOAsyncRequests requestList = new WWOAsyncRequests(nReq);
+            WWOAsyncRequests requestList = new WWOAsyncRequests();
 
             for (int i = 0; i < nReq; ++i)
             {
@@ -88,16 +88,18 @@ namespace Ficha1
                 asyncHandle = rClient.ExecuteAsync<Data>(request, response => {
                     requestList.AddRequest(asyncHandle, response);
                 });
+                requestList.AddRequest(asyncHandle, null);
             }
             
             //Wait for requests to finish
             Console.WriteLine("Waiting for requests");
-            int count = TIMEOUT;
-            while (!requestList.AllRequestsFinished()) {
-                if (count-- <= 0)
-                    throw new ApplicationException("Timeout. Request are taking too long to complete");
-                Thread.Sleep(MS_PAUSE);
-            };
+            if (!requestList.WaitForFinish(TIMEOUT))
+            {
+                Console.WriteLine("WARNING: Requests are taking too long to complete.");
+                requestList.CancelRequests();
+                //TODO what else?
+                //TODO test with small amount of time to force timeout, and see what happens
+            }
 
             //Check if all requests completed successfully
             //TODO if not ok?

@@ -2,14 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ficha1
 {
     class WWOAsyncRequests
     {
-        private int size;
-        private Dictionary<RestRequestAsyncHandle, RestResponse<Data>> _requestDict = new Dictionary<RestRequestAsyncHandle, RestResponse<Data>>();
+        private const int MAX_CHECK_FINISH = 500;
+        private Dictionary<RestRequestAsyncHandle, RestResponse<Data>> _requestDict;
         public Dictionary<RestRequestAsyncHandle, RestResponse<Data>> RequestDict
         {
             get{return _requestDict;}
@@ -17,10 +18,9 @@ namespace Ficha1
 
         private static object _sync = new object();
 
-        public WWOAsyncRequests(int size)
+        public WWOAsyncRequests()
         {
-            this.size = size;
-            //_requestDict = new Dictionary<RestRequestAsyncHandle, RestResponse<Data>>();
+            _requestDict = new Dictionary<RestRequestAsyncHandle, RestResponse<Data>>();
         }
 
         public void AddRequest(RestRequestAsyncHandle asyncHandle, IRestResponse<Data> response)
@@ -28,11 +28,19 @@ namespace Ficha1
             //For multithreading protection propose
             lock (_sync)
             {
-                _requestDict.Add(asyncHandle, (RestResponse<Data>)response);
+
+                //This is the very exceptional case when the response gest first before
+                //the item creation
+                if (response == null && _requestDict.ContainsKey(asyncHandle))
+                    return;//Do nothing
+
+                _requestDict[asyncHandle] = (RestResponse<Data>)response;
+
+                //TODO delete this
+                if(response!=null)
+                    Console.WriteLine(response.ResponseStatus + ": Status Code " + response.StatusCode);
             }
 
-            //TODO delete this
-            Console.WriteLine(response.ResponseStatus + ": Status Code " + response.StatusCode);
         }
 
 
@@ -42,9 +50,12 @@ namespace Ficha1
                 r.Abort();
         }
 
-        public Boolean AllRequestsFinished()
+        private Boolean AllRequestsFinished()
         {
-            return RequestDict.Keys.Count == size;
+            foreach (RestResponse<Data> r in RequestDict.Values)
+                if (r == null) return false;
+
+            return true;
         }
 
         public bool CheckStatusCodes()
@@ -54,6 +65,20 @@ namespace Ficha1
 
             return true;
         }
+
+        public bool WaitForFinish(int timeoutInMilis)
+        {
+            while (!AllRequestsFinished())
+            {
+                if (timeoutInMilis <= 0)
+                    return false;
+                    
+                Thread.Sleep(MAX_CHECK_FINISH);
+                timeoutInMilis -= MAX_CHECK_FINISH;
+            };
+
+            return true;
+        } 
     
 
     }
