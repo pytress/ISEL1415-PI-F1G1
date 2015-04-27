@@ -86,9 +86,9 @@ namespace Ficha1
                 //Make asynchronous request
                 RestRequestAsyncHandle asyncHandle = null;
                 asyncHandle = rClient.ExecuteAsync<Data>(request, response => {
-                    requestList.AddRequest(asyncHandle, response);
+                    requestList.SaveRequest(asyncHandle, response);
                 });
-                requestList.AddRequest(asyncHandle, null);
+                requestList.SaveRequest(asyncHandle, null);
             }
             
             //Wait for requests to finish

@@ -23,7 +23,7 @@ namespace Ficha1
             _requestDict = new Dictionary<RestRequestAsyncHandle, RestResponse<Data>>();
         }
 
-        public void AddRequest(RestRequestAsyncHandle asyncHandle, IRestResponse<Data> response)
+        public void SaveRequest(RestRequestAsyncHandle asyncHandle, IRestResponse<Data> response)
         {
             //For multithreading protection propose
             lock (_sync)
