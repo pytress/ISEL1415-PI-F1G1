@@ -12,9 +12,15 @@ namespace Crawler
         //dicionário que vai ter como chave uma palavra e como valor associado a ela, vai ser um conjunto de links (URL) onde a mesma se encontra 
         private IDictionary<string,List<string>> dict = new Dictionary<string,List<string>>();
 
+        private RestClient client;
+        private RestRequest req;
+        private RestResponse resp;
+
         public CrawlerObject(string url,int lvl) {
             Url = url;
             Level= lvl;
+            client = new RestClient(url);
+            req = new RestRequest(Method.GET);
         }
 
         public int Level {
@@ -44,6 +50,8 @@ namespace Crawler
              *      5º Por fim, chamamos o Merge Do pai, passando como argumento o dicionário do filho!
              * 
              * */
+
+
 
         } 
 
