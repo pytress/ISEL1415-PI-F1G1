@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RestSharp;
 
 namespace Crawler
 {
@@ -35,7 +36,8 @@ namespace Crawler
 
         public void Execute() { 
             /* TODO
-             *      1º Percorrer a pagina corrente, e actualizar dicionario com as palavras e respectivo link corrente
+             *      1º Percorrer a pagina corrente, e actualizar dicionario com as palavras e respectivo link corrente (Cuidado
+             *      porque só interessa os href do BODY e mesmo assim não sei se são todos!)
              *      2º Em simultâneo, guardar hrefs numa estrututra
              *      3º Por cada href, crio um novo Crawler filho e faço Execute() a ele
              *              4º Crio um dicionario temporário, para guardar o dicionario do crawler filho
