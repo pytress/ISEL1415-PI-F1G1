@@ -22,5 +22,13 @@ namespace Ficha1
             Console.Read();
         }
 
+        public static void PrintHistrogram(HistAndGraphData histogram)
+        {
+
+            Console.WriteLine("Temperature Histogram for: {0}\n", histogram.);
+
+
+        }
+
     }
 }

@@ -88,9 +88,8 @@ namespace Ficha1
                 //make http request
                 List<Weather> weather = RequestData2(startDate, nDays);
 
-                //faz contagem dos resltados
-                //devolve histogram
-                return ProcessReceivedData(null);
+                //Process data and return
+                return ProcessReceivedData(weather);
             }
             else
             {
@@ -111,7 +110,6 @@ namespace Ficha1
                 return HistAndGraphData.Merge(hData);
             }
             
-            return null;
         }
         
         public void RequestAsyncData()
