@@ -48,6 +48,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ConsoleUtils.cs" />
+    <Compile Include="GraphData.cs" />
+    <Compile Include="HistData.cs" />
     <Compile Include="Histogram.cs" />
     <Compile Include="WWOAsyncRequests.cs" />
     <Compile Include="WWOData.cs" />

@@ -53,9 +53,6 @@ namespace Ficha1
                 hist.PresentResults();
             }
         }
-
-
-
     }
 }
 /*

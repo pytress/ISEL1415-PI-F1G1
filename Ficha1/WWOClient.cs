@@ -293,6 +293,28 @@ namespace Ficha1
                     rReq.AddQueryParameter("date", DateTime.Now.ToString("yyyy-MM-dd")); //then start date is current day
             }
         }
+
+        private HistData FilterWDataForHist(List<Weather> wData) //TODO: necessário confirmar conteúdo válido antes de evocar
+        {
+            HistData hData = new HistData(wData[0].date, wData[wData.Count - 1].date);
+
+            wData.ForEach(elem => hData.AddTemps(int.Parse(elem.mintempC), int.Parse(elem.maxtempC)));
+
+            return hData;
+        }
+
+        private GraphDataChunk FilterWDataForGraph(List<Weather> wData) //TODO: necessário confirmar conteúdo válido antes de evocar
+        {
+            GraphDataChunk gData = new GraphDataChunk(wData[0].date, wData[wData.Count - 1].date);
+
+            foreach (Weather wElem in wData)
+            {
+                if (gData.SetDate(wElem.date) == true)
+                    foreach (Hourly hourly in wElem.hourly)
+                        gData.AddHourlyTemps(int.Parse(hourly.time), int.Parse(hourly.tempC));
+            }
+
+            return gData;
+        }
     }
 }
-
