@@ -12,15 +12,16 @@ namespace Ficha1
     class WWOClient
     {
         #region Constants
-        private const string SCHEMA = "http://";
-        private const string HOST = "api.worldweatheronline.com";
-        private const string API_PATH = "free/v2/past-weather.ashx";
-        private const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
-        private const string RESP_FORMAT = "json";
-        private const int MAX_N_DAYS_PER_REQ = 5;
-        private const int QRY_PER_SEC_ALLOWED = 5;
-        private const int MS_PAUSE = 1000;
-        private const int TIMEOUT = 5000;
+        private static const string SCHEMA = "http://";
+        private static const string HOST = "api.worldweatheronline.com";
+        private static const string API_PATH = "free/v2/past-weather.ashx";
+        private static const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
+        private static const string RESP_FORMAT = "json";
+        private static const int MAX_N_DAYS_PER_REQ = 5;
+        private static const int QRY_PER_SEC_ALLOWED = 5;
+        private static const int MS_PAUSE = 1000;
+        private static const int TIMEOUT = 5000;
+        public static const string DATE_FORMAT = "yyyy-MM-dd";
         #endregion
 
         private static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
@@ -83,9 +84,8 @@ namespace Ficha1
                 //make http request
                 List<Weather> weather = RequestData2(startDate, nDays);
 
-                //faz contagem dos resltados
-                //devolve histogram
-                return ProcessReceivedData(null);
+                //Process data and return
+                return ProcessReceivedData(weather);
             }
             else
             {
@@ -106,7 +106,6 @@ namespace Ficha1
                 return HistAndGraphData.Merge(hData);
             }
             
-            return null;
         }
         
         public void RequestAsyncData()
@@ -177,8 +176,8 @@ namespace Ficha1
             request.AddQueryParameter("key", API_KEY);        //registered key to access API
             request.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
             request.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
-            request.AddQueryParameter("date", startDate.ToString("yyyy-MM-dd"));
-            request.AddQueryParameter("enddate", startDate.AddDays(nDays).ToString("yyyy-MM-dd"));
+            request.AddQueryParameter("date", startDate.ToString(DATE_FORMAT));
+            request.AddQueryParameter("enddate", startDate.AddDays(nDays).ToString(DATE_FORMAT));
 
             var rResp = ExecuteRequest(request);
             
@@ -364,14 +363,14 @@ namespace Ficha1
                     DateTime partialEndDate = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ - 1); //set new end date to start plus the maximum number of days per request
                     DateTime partialStartDate = partialEndDate.AddDays(1);                           //set new start date (day before new end date)
 
-                    usefullArgPairs[validKeys[1]] = partialStartDate.ToString("yyyy-MM-dd");         //save new start date to arguments
+                    usefullArgPairs[validKeys[1]] = partialStartDate.ToString(DATE_FORMAT);         //save new start date to arguments
                     Console.WriteLine("New start date: {0}", usefullArgPairs[validKeys[1]]);       //DEBUG: show new start date
                     if (partialEndDate > DateTime.Parse(end))                                        //check end of requeste date interval
                         rReq.AddQueryParameter("enddate", end);
                     else
                     {
-                        rReq.AddQueryParameter("enddate", partialEndDate.ToString("yyyy-MM-dd"));
-                        Console.WriteLine("New end date: {0}", partialEndDate.ToString("yyyy-MM-dd")); //DEBUG: show new start date
+                        rReq.AddQueryParameter("enddate", partialEndDate.ToString(DATE_FORMAT));
+                        Console.WriteLine("New end date: {0}", partialEndDate.ToString(DATE_FORMAT)); //DEBUG: show new start date
                     }
                 }
             }
@@ -380,7 +379,7 @@ namespace Ficha1
                 if (usefullArgPairs.TryGetValue(validKeys[2], out end))                  //but end date is (the only defined)
                     rReq.AddQueryParameter("date", end);                                 //then end date will be used as the only and start date
                 else                                                                     //no date whatsoever defined
-                    rReq.AddQueryParameter("date", DateTime.Now.ToString("yyyy-MM-dd")); //then start date is current day
+                    rReq.AddQueryParameter("date", DateTime.Now.ToString(DATE_FORMAT)); //then start date is current day
             }
         }
 

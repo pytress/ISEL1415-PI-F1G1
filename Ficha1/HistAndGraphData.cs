@@ -8,7 +8,7 @@ namespace Ficha1
 {
     class HistAndGraphData
     {
-        private class TemperatureOccurences
+        public class TemperatureOccurences
         {
             private int minNOccurences; //number of a minimum temperature occurences
             internal int MinNOccurences { get { return minNOccurences; } }
