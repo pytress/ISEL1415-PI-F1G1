@@ -11,6 +11,9 @@ namespace Ficha1
 {
     class WWOClient
     {
+
+        #region Constants
+
         private const string SCHEMA = "http://";
         private const string HOST = "api.worldweatheronline.com";
         private const string API_PATH = "free/v2/past-weather.ashx";
@@ -20,6 +23,11 @@ namespace Ficha1
         private const int QRY_PER_SEC_ALLOWED = 5;
         private const int MS_PAUSE = 1000;
         private const int TIMEOUT = 5000;
+        
+        #endregion
+
+
+
         private static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
         //private static readonly HashSet<string> validKeys2 = new HashSet<string> { "-local", "-startdate", "-enddate" };
 
@@ -79,7 +87,9 @@ namespace Ficha1
             //TODO: MAX_N_DAYS_PER_REQ must return a pair
             if (nDays < MAX_N_DAYS_PER_REQ)
             {
-                //faz pedido HTTP
+                //make http request
+                List<Weather> weather = RequestData2(startDate, nDays);
+
                 //faz contagem dos resltados
                 //devolve histogram
                 return ProcessReceivedData(null);
@@ -160,6 +170,33 @@ namespace Ficha1
 
         }
 
+        public List<Weather> RequestData2(DateTime startDate, int nDays)
+        {
+
+            var request = new RestRequest(API_PATH);
+            request.RequestFormat = DataFormat.Json; //TODO: necessary?
+            request.RootElement = "data";
+
+            //Build query string
+            request.AddQueryParameter("key", API_KEY);        //registered key to access API
+            request.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
+            request.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
+            request.AddQueryParameter("date", startDate.ToString("yyyy-MM-dd"));
+            request.AddQueryParameter("enddate", startDate.AddDays(nDays).ToString("yyyy-MM-dd"));
+
+            var rResp = ExecuteRequest(request);
+            
+            if (rResp != null)
+            {
+                Data wwoData = rResp.Data;
+                if (!ErrorInBody(wwoData))
+                {
+                    return wwoData.weather;
+                }
+            }
+
+            return null;
+        }
 
         //TODO: this method was replaced by RequestAsyncData(); remove this one.
         //NOTA: so disponivel dados de 1-Jul-2008 em diante; agora parece que so de ha 2 meses a esta parte
