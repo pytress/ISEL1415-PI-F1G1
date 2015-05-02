@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
+using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Crawler
 {
@@ -18,14 +20,26 @@ namespace Crawler
         private RestClient client;
         private RestRequest req;
         private RestResponse resp;
+        private const string CONTENT_TYPE_VALUE = "text/html"; 
+
 
         public CrawlerObject(string url,int lvl) {
+            url = AdjustURL(url);
             Url = url;
             Level= lvl;
             client = new RestClient(url);
             req = new RestRequest(Method.GET);
             req.AddHeader("Accept", "text/html");
         } //constructor
+
+        
+        private string AdjustURL(string url)
+        {
+            string http="http://";
+
+            if (!url.Contains("https") && !url.Contains("http")) { url = string.Concat(http, url); }           
+            return url;
+        }        
 
         public int Level {
             get; set; 
@@ -70,14 +84,38 @@ namespace Crawler
             crawler1.Merge(temp);   */
 
             resp = (RestResponse)client.Execute(req);
-            if (resp.ContentType!="text/html") throw new ApplicationException;
+            if ( !(resp.ContentType.Contains(CONTENT_TYPE_VALUE)) || resp.StatusCode != HttpStatusCode.OK) throw new ApplicationException();
+
+            // Guardo numa string o conteúdo da resposta HTTP
+            string resp_content = resp.Content;
+
+            //Agora quero só o body da resposta HTTP
+            int first;
+            string body = resp_content.Substring(first=resp_content.IndexOf("<body>"), resp_content.IndexOf("</body>")-first+"</body>".Length);
+
+
+            FillListWithRefs(body);
+
+            //paralel for, para executar todos os pedidos referentes às strings presentes na lista hrefs! 
 
             // work work work... ... ...
 
-    
+            Console.WriteLine(" PUMMMMMMMMMMMMMMM ");
 
 
-        } 
+        } //close method Execute()
+
+
+        private void FillListWithRefs(string body) {
+            Match m = Regex.Match(body, @"<a.*?href=\""(.*?)\""", RegexOptions.Singleline);
+
+            while (m.Success)
+            {
+                string link = m.Groups[1].Value;
+                hrefs.Add(link); /*ATTENTION: link could be non-http. E.G. --> mailto:xxxxx@yyyyyy.pt  */
+                m = m.NextMatch();
+            }
+        } //close method FillListWithRefs(string body)
 
 
     }//close class

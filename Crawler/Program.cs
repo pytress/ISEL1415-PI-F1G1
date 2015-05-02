@@ -39,7 +39,7 @@ namespace Crawler
                 Console.WriteLine(excep.ToString());
             }
 
-            /* Other Catch to exceptions Goes Here...  :D   :D 
+            /* Other Catch Block to treat the exceptions Goes Here...  :D   :D 
 
                            ..................... */
 
