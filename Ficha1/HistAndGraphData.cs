@@ -106,7 +106,6 @@ namespace Ficha1
         public static HistAndGraphData Merge(HistAndGraphData[] hgData)
         { 
             HistAndGraphData newHGData = new HistAndGraphData();
-            return hData[0];
 
             for (int i = 0; i < hgData.Length; ++i)
                 newHGData.Append(hgData[i]);
