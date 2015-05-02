@@ -362,9 +362,11 @@ namespace Ficha1
             return gData;
         }
 
-        private HistAndGraphData ProcessReceivedData(List<Weather> wData) //TODO: como verificar que o resultado corresponde ao pedido (interval de datas)
+        //TODO: necessário confirmar conteúdo válido antes de evocar
+        //TODO: como verificar que o resultado corresponde ao pedido (interval de datas)
+        private HistAndGraphData ProcessReceivedData(List<Weather> wData)
         {
-            return new HistAndGraphData();
+            return new HistAndGraphData(wData[0].date, wData[wData.Count - 1].date);
         }
     }
 }
