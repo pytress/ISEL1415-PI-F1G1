@@ -58,7 +58,7 @@ namespace Ficha1
             dayCounter = 0;
         }
 
-        public HistAndGraphData(string startDate, string endDate)
+        public HistAndGraphData(string startDate, string endDate, int nHours) //TODO: podemos verificar correção de dados porque sabemos quantos dias e quantas horas
         {
             dayCounter = 0;
 
@@ -77,6 +77,8 @@ namespace Ficha1
 
             tempsCount = new Dictionary<int, TemperatureOccurences>();
             accumHourlyTemps = new Dictionary<int, int>();
+            for (int hour = 0; hour < 2400; hour += 2400 / nHours*100) //hours in response data comes in hundreds format
+                accumHourlyTemps.Add(hour, 0);
         }
 
         public bool SetDate(string setDate)
@@ -97,10 +99,15 @@ namespace Ficha1
 
         internal void AddHourlyTemps(int time, int temp)
         {
+            if (!accumHourlyTemps.ContainsKey(time)) throw new InvalidOperationException("Day hourly time not expected!");
+            accumHourlyTemps[time] += temp;
+
+            /*
             if (accumHourlyTemps.ContainsKey(time))
                 accumHourlyTemps[time] += temp;
             else
                 accumHourlyTemps[time] = temp;
+            */
         }
 
         public static HistAndGraphData Merge(HistAndGraphData[] hgData)
