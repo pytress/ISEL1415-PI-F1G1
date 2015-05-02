@@ -91,6 +91,7 @@ namespace Ficha1
         public static HistAndGraphData Merge(HistAndGraphData[] hData)
         {
             //throw new NotImplementedException();
+            return hData[0];
 
         }
 

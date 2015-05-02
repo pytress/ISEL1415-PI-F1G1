@@ -190,6 +190,8 @@ namespace Ficha1
                 }
             }
 
+            Console.WriteLine("null");
+
             return null;
         }
 
