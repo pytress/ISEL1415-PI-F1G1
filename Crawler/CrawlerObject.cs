@@ -17,16 +17,19 @@ namespace Crawler
         //lista de Url's que terão que ser visitados
         private List<string> hrefs = new List<string>();
 
+        //public int Level { get; set; }
+        //public string Url { get; set; }
+        private int level;
+        private string url;
+
         private RestClient client;
         private RestRequest req;
-        //private RestResponse resp;
         private const string CONTENT_TYPE_VALUE = "text/html"; 
 
 
         public CrawlerObject(string url,int lvl) {
-            url = AdjustURL(url);
-            Url = url;
-            Level= lvl;            
+            this.url = AdjustURL(url);
+            level= lvl;            
             client = new RestClient(url);
             req = new RestRequest(Method.GET);
             req.AddHeader("Accept", "text/html");
@@ -41,17 +44,10 @@ namespace Crawler
             return url;
         }        
 
-        public int Level {
-            get; set; 
-        }
 
-        public string Url {
-            get;set;
-        }
-
-        public IDictionary<string, List<string>> GetDict() { 
-            return dict; 
-        }
+        //public IDictionary<string, List<string>> GetDict() { 
+        //    return dict; 
+        //}
 
         private void Merge(IDictionary<string,List<string>> dict) {
             //TODO uniar os dois dicionários! Cuidado pk mesmo que as chaves sejam iguais, ainda tenho que fazer union das listas (valores da key)
@@ -109,12 +105,12 @@ namespace Crawler
             FillListWithRefs(body);
             FillDictWithWords(body);
 
-            if (Level > 0)
+            if (level > 0)
             {
                 //paralel for, para executar todos os pedidos referentes às strings presentes na lista hrefs! 
                 for (int i = 0; i < hrefs.Count; ++i)
                 {
-                    CrawlerObject crawler_temp = new CrawlerObject(hrefs[i], Level - 1);
+                    CrawlerObject crawler_temp = new CrawlerObject(hrefs[i], level - 1);
                     IDictionary<string, List<string>> dict_temp = crawler_temp.Execute();
                     Merge(dict_temp);
                 }
@@ -136,7 +132,7 @@ namespace Crawler
             foreach (string word in words)
             {
                 if (dict.ContainsKey(word) == false) {
-                    dict.Add(word, new List<string>() { this.Url});
+                    dict.Add(word, new List<string>() { url});
                 }
             }
         }
