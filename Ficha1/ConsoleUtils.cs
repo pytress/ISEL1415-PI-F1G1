@@ -25,7 +25,13 @@ namespace Ficha1
         public static void PrintHistrogram(HistAndGraphData histogram)
         {
 
-            Console.WriteLine("Temperature Histogram for: {0}\n", histogram.);
+            Console.WriteLine("Temperature Histogram from {0} to {1}\n",
+                               histogram.StartDate.ToString(WWOClient.DATE_FORMAT),
+                               histogram.EndDate.ToString(WWOClient.DATE_FORMAT));
+
+            //histogram.
+
+            
 
 
         }
