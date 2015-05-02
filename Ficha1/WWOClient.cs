@@ -59,14 +59,14 @@ namespace Ficha1
             rClient = new RestClient(SCHEMA + HOST);
         }
 
-        public HistData GetData()
+        public HistAndGraphData GetData()
         {
             //TODO:
             //count days
             //Define start and end
             DateTime start = DateTime.Now; //?
 
-            HistData tmpData = ProcessRequests(start, 40);
+            HistAndGraphData tmpData = ProcessRequests(start, 40);
 
             //Calculate media
             //tmpData.CalculateAvg;
@@ -74,7 +74,7 @@ namespace Ficha1
             return tmpData;
         }
 
-        private HistData ProcessRequests(DateTime startDate, int nDays)
+        private HistAndGraphData ProcessRequests(DateTime startDate, int nDays)
         {
             //TODO: MAX_N_DAYS_PER_REQ must return a pair
             if (nDays < MAX_N_DAYS_PER_REQ)
@@ -82,11 +82,12 @@ namespace Ficha1
                 //faz pedido HTTP
                 //faz contagem dos resltados
                 //devolve histogram
+                return ProcessReceivedData(null);
             }
             else
             {
                 int days = nDays / 2;                                      //split number of days in half
-                HistData[] hData = new HistData[2];
+                HistAndGraphData[] hData = new HistAndGraphData[2];
 
                 Parallel.For(0, 2, i =>
                 {
@@ -96,7 +97,7 @@ namespace Ficha1
                     hData[i] = ProcessRequests(adjustedStart, adjustedDays);
                 });
 
-                return HistData.Merge(hData);
+                return HistAndGraphData.Merge(hData);
             }
             
             return null;
@@ -359,6 +360,11 @@ namespace Ficha1
             }
 
             return gData;
+        }
+
+        private HistAndGraphData ProcessReceivedData(List<Weather> wData)
+        {
+            return new HistAndGraphData();
         }
     }
 }
