@@ -17,6 +17,7 @@ namespace Ficha1
         private const string API_PATH = "free/v2/past-weather.ashx";
         private const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
         private const string RESP_FORMAT = "json";
+        private const int DEFAULT_TIME_INTERVAL = 3;
         private const int MAX_N_DAYS_PER_REQ = 5;
         private const int QRY_PER_SEC_ALLOWED = 5;
         private const int MS_PAUSE = 1000;
@@ -412,7 +413,7 @@ namespace Ficha1
         //TODO: como verificar que o resultado corresponde ao pedido (interval de datas)
         private HistAndGraphData ProcessReceivedData(List<Weather> wData)
         {
-            HistAndGraphData hgData = new HistAndGraphData(wData[0].date, wData[wData.Count - 1].date);
+            HistAndGraphData hgData = new HistAndGraphData(wData[0].date, wData[wData.Count - 1].date, wData[0].hourly.Count);
 
             wData.ForEach(wElem => {
                 hgData.AddDailyTemps(int.Parse(wElem.mintempC), int.Parse(wElem.maxtempC));
