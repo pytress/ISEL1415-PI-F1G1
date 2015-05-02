@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Net;
 using RestSharp;
+using System.Threading.Tasks;
 
 namespace Ficha1
 {
@@ -58,6 +59,54 @@ namespace Ficha1
             rClient = new RestClient(SCHEMA + HOST);
         }
 
+        public HistData GetData()
+        {
+            //TODO:
+            //count days
+            //Define start and end
+            DateTime start = DateTime.Now; //?
+
+            HistData tmpData = ProcessRequests(40, start);
+
+            //Calculate media
+            //tmpData.CalculateAvg;
+
+            return tmpData;
+        }
+
+        private HistData ProcessRequests(int days, DateTime start)
+        {
+            //TODO MAX_N_DAYS_PER_REQ must return a pair
+            if (days < MAX_N_DAYS_PER_REQ)
+            {
+                //Faz pedido
+                //Faz contagem
+                // devolve histogram
+            }
+            else
+            {
+                HistData[] hData = new HistData[2];
+
+                Parallel.For(0, 2, i =>
+                {
+                    //calculate days
+                    //Calculate new start
+                    int d = days % 2 == 0? days/2 : (days/2)+i;
+
+                    hData[i] = ProcessRequests(d, start.AddDays(i * d));
+                });
+
+                return HistData.Merge(hData);
+            }
+
+                
+            
+            
+            return null;
+        }
+
+               
+        
         public void RequestAsyncData()
         {
             //number of HTTP request necessary to obtain the data requested

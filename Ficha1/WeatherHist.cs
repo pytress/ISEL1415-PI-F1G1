@@ -12,17 +12,24 @@ namespace Ficha1
 
         static void Main(string[] args)
         {
+
+            
             //Validade args
             Dictionary<string, string> keyValuePairs = ValidateArgs(args);
 
             //Instantiate client and request data
             WWOClient client = new WWOClient(keyValuePairs);
             //client.RequestData();//TODO remove this
-            client.RequestAsyncData();
-            WeatherData wData = client.ReturnedData;
+            //client.RequestAsyncData();
+
+            //WeatherData wData = client.ReturnedData;
+
+            //TODO change this name?
+            HistData wData = client.GetData();
+
 
             //Print Histogram
-            PrintHistogram(wData, client.LastReqResultStatus);
+            //PrintHistogram(wData, client.LastReqResultStatus);
 
             ConsoleUtils.Pause();
         }
