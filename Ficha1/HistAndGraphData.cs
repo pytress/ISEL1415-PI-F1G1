@@ -118,7 +118,7 @@ namespace Ficha1
         //Check/validade a received date is in the defined date interval (when calling the constructor)
         private bool IsValidDate(DateTime date)
         {
-            return (date.CompareTo(startDate) < 0 || date.CompareTo(endDate) > 0) ? false : true;
+            return date.CompareTo(startDate) >= 0 && date.CompareTo(endDate) <= 0;
         }
     }
 }
