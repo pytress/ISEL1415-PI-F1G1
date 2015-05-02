@@ -12,16 +12,16 @@ namespace Ficha1
     class WWOClient
     {
         #region Constants
-        private static const string SCHEMA = "http://";
-        private static const string HOST = "api.worldweatheronline.com";
-        private static const string API_PATH = "free/v2/past-weather.ashx";
-        private static const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
-        private static const string RESP_FORMAT = "json";
-        private static const int MAX_N_DAYS_PER_REQ = 5;
-        private static const int QRY_PER_SEC_ALLOWED = 5;
-        private static const int MS_PAUSE = 1000;
-        private static const int TIMEOUT = 5000;
-        public static const string DATE_FORMAT = "yyyy-MM-dd";
+        private const string SCHEMA = "http://";
+        private const string HOST = "api.worldweatheronline.com";
+        private const string API_PATH = "free/v2/past-weather.ashx";
+        private const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
+        private const string RESP_FORMAT = "json";
+        private const int MAX_N_DAYS_PER_REQ = 5;
+        private const int QRY_PER_SEC_ALLOWED = 5;
+        private const int MS_PAUSE = 1000;
+        private const int TIMEOUT = 5000;
+        public const string DATE_FORMAT = "yyyy-MM-dd";
         #endregion
 
         private static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };

@@ -23,6 +23,7 @@ namespace Ficha1
 
             //Print Histogram
             //PrintHistogram(wData, client.LastReqResultStatus);
+            ConsoleUtils.PrintHistrogram(wData);
 
             ConsoleUtils.Pause();
         }

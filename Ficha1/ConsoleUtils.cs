@@ -9,9 +9,9 @@ namespace Ficha1
     class ConsoleUtils
     {
 
-        static const char TEMP_MIN_CHR = '*';
-        static const char TEMP_MAX_CHR = '#';
-        static const char AVG_TEMP_CHR = '>';
+        const char TEMP_MIN_CHR = '*';
+        const char TEMP_MAX_CHR = '#';
+        const char AVG_TEMP_CHR = '>';
 
 
         public static void Pause()
@@ -35,23 +35,26 @@ namespace Ficha1
                                histogram.StartDate.ToString(WWOClient.DATE_FORMAT),
                                histogram.EndDate.ToString(WWOClient.DATE_FORMAT));
 
-            int x = histogram.TempsCount[0].MaxNOccurences;
+            List<int> temperatures = histogram.TempsCount.Keys.ToList();
+            temperatures.Sort();
 
-            //histogram.TempsCount.or
+            Console.Write("ºC |");
 
-
-            foreach (int temperature in histogram.TempsCount.Keys)
+            foreach (int temperature in temperatures)
             {
-                Console.Write("{0} | ", temperature);
                 int max = histogram.TempsCount[temperature].MaxNOccurences;
                 int min = histogram.TempsCount[temperature].MinNOccurences;
-                
 
+                Console.Write("{0} | ", temperature);
+                Console.WriteLine(max.ToString().PadLeft(max, TEMP_MAX_CHR));
+
+                Console.Write("{0} | ", temperature);
+                Console.WriteLine(min.ToString().PadLeft(min, TEMP_MIN_CHR));
             
             }
 
-
-            
+            Console.Write("   |--------------------------------------");
+            Console.Write("                               Ocurrências");
 
 
         }
