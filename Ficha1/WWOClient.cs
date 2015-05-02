@@ -69,12 +69,11 @@ namespace Ficha1
 
         public HistAndGraphData GetData()
         {
-            //TODO:
-            //count days
-            //Define start and end
-            DateTime start = DateTime.Now; //?
+            //Get start date and number of days
+            DateTime start = GetStartDate();
+            int nDays = GetNDaysRequested();
 
-            HistAndGraphData tmpData = ProcessRequests(start, 40);
+            HistAndGraphData tmpData = ProcessRequests(start, nDays);
 
             //Calculate media
             //tmpData.CalculateAvg;
@@ -250,6 +249,18 @@ namespace Ficha1
                 //ao passo que nos testes do proprio site do WWO costuma ser transfer-enconding chunked
                 //parece ainda que o maximo de dias que devolve num unico pedido sao 35 dias
             }
+        }
+
+        private DateTime GetStartDate()
+        {
+            string start;
+            DateTime dtStart;
+            if (usefullArgPairs.TryGetValue(validKeys[1], out start))
+                dtStart = DateTime.Parse(start);
+            else
+                dtStart = DateTime.Now;
+
+            return dtStart;
         }
 
         private int GetNDaysRequested()
