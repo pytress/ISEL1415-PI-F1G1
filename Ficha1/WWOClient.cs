@@ -413,9 +413,11 @@ namespace Ficha1
         {
             HistAndGraphData hgData = new HistAndGraphData(wData[0].date, wData[wData.Count - 1].date);
 
-            wData.ForEach(elem => {
-                hgData.AddTemps(int.Parse(elem.mintempC), int.Parse(elem.maxtempC));
-
+            wData.ForEach(wElem => {
+                hgData.AddDailyTemps(int.Parse(wElem.mintempC), int.Parse(wElem.maxtempC));
+                if (hgData.SetDate(wElem.date) == true)
+                    foreach (Hourly hourly in wElem.hourly)
+                        hgData.AddHourlyTemps(int.Parse(hourly.time), int.Parse(hourly.tempC));
             });
             
             return hgData;
