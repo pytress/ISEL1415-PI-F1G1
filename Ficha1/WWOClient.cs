@@ -362,7 +362,7 @@ namespace Ficha1
             return gData;
         }
 
-        private HistAndGraphData ProcessReceivedData(List<Weather> wData)
+        private HistAndGraphData ProcessReceivedData(List<Weather> wData) //TODO: como verificar que o resultado corresponde ao pedido (interval de datas)
         {
             return new HistAndGraphData();
         }
