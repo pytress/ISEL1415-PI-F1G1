@@ -11,9 +11,7 @@ namespace Ficha1
 {
     class WWOClient
     {
-
         #region Constants
-
         private const string SCHEMA = "http://";
         private const string HOST = "api.worldweatheronline.com";
         private const string API_PATH = "free/v2/past-weather.ashx";
@@ -23,10 +21,7 @@ namespace Ficha1
         private const int QRY_PER_SEC_ALLOWED = 5;
         private const int MS_PAUSE = 1000;
         private const int TIMEOUT = 5000;
-        
         #endregion
-
-
 
         private static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
         //private static readonly HashSet<string> validKeys2 = new HashSet<string> { "-local", "-startdate", "-enddate" };
@@ -94,13 +89,16 @@ namespace Ficha1
             }
             else
             {
-                int days = nDays / 2;                                      //split number of days in half
+                //split number of days in half
+                int days = nDays / 2;                                      
                 HistAndGraphData[] hData = new HistAndGraphData[2];
 
                 Parallel.For(0, 2, i =>
                 {
-                    DateTime adjustedStart = startDate.AddDays(days * i); //start depends on iteration; first half interval is always the size of the integer division
-                    int adjustedDays = days + (nDays % 2) * i;            //the number of days can be diferent for the second half interval (if number of days is odd)
+                    //start depends on iteration; first half interval is always the size of the integer division
+                    //the number of days can be diferent for the second half interval (if number of days is odd)
+                    DateTime adjustedStart = startDate.AddDays(days * i); 
+                    int adjustedDays = days + (nDays % 2) * i;            
 
                     hData[i] = ProcessRequests(adjustedStart, adjustedDays);
                 });
@@ -413,7 +411,16 @@ namespace Ficha1
         //TODO: como verificar que o resultado corresponde ao pedido (interval de datas)
         private HistAndGraphData ProcessReceivedData(List<Weather> wData)
         {
-            return new HistAndGraphData(wData[0].date, wData[wData.Count - 1].date);
+            HistAndGraphData hgData = new HistAndGraphData(wData[0].date, wData[wData.Count - 1].date);
+
+            wData.ForEach(wElem => {
+                hgData.AddDailyTemps(int.Parse(wElem.mintempC), int.Parse(wElem.maxtempC));
+                if (hgData.SetDate(wElem.date) == true)
+                    foreach (Hourly hourly in wElem.hourly)
+                        hgData.AddHourlyTemps(int.Parse(hourly.time), int.Parse(hourly.tempC));
+            });
+            
+            return hgData;
         }
     }
 }
