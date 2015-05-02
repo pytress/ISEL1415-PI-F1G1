@@ -19,7 +19,7 @@ namespace Crawler
 
         private RestClient client;
         private RestRequest req;
-        private RestResponse resp;
+        //private RestResponse resp;
         private const string CONTENT_TYPE_VALUE = "text/html"; 
 
 
@@ -62,6 +62,8 @@ namespace Crawler
 
         public IDictionary<string, List<string>> Execute()
         {
+
+            #region delete this
             /* TODO
              *      1º Percorrer a pagina corrente, e actualizar dicionario com as palavras e respectivo link corrente (Cuidado
              *      porque só interessa os href do BODY e mesmo assim não sei se são todos!)
@@ -85,8 +87,14 @@ namespace Crawler
 
             crawler1.Merge(temp);   */
 
-            resp = (RestResponse)client.Execute(req);
-            if ( !(resp.ContentType.Contains(CONTENT_TYPE_VALUE)) || resp.StatusCode != HttpStatusCode.OK) throw new ApplicationException();
+            #endregion
+
+            RestResponse resp = (RestResponse)client.Execute(req);
+            //Validate response content
+            if (resp.Content == "" ||
+                !(resp.ContentType.Contains(CONTENT_TYPE_VALUE)) ||
+                resp.StatusCode != HttpStatusCode.OK)
+                return dict;
 
             // Guardo numa string o conteúdo da resposta HTTP
             string resp_content = resp.Content;
