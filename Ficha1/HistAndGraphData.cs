@@ -28,12 +28,19 @@ namespace Ficha1
         }
 
         private double dayCounter;
-        private DateTime startDate, endDate;
+
+        private DateTime startDate;
+        public DateTime StartDate { get { return startDate;} }
+        private DateTime endDate;
+        public DateTime EndDate { get { return endDate; } }
+
         private Dictionary<int, TemperatureOccurences> tempsCount;
         //lista de horas com respetivo acumulador de temps (so no final se faz media)
 
         public HistAndGraphData(string startDate, string endDate)
         {
+            dayCounter = 0;
+
             DateTime start = DateTime.Parse(startDate);
             DateTime end = DateTime.Parse(startDate);
 
@@ -45,7 +52,7 @@ namespace Ficha1
                 this.endDate = start;
             }
 
-            dayCounter = 0;
+            tempsCount = new Dictionary<int, TemperatureOccurences>();
         }
 
         public void AddTemps(int min, int max)

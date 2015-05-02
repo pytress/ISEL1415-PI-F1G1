@@ -11,9 +11,7 @@ namespace Ficha1
 {
     class WWOClient
     {
-
         #region Constants
-
         private const string SCHEMA = "http://";
         private const string HOST = "api.worldweatheronline.com";
         private const string API_PATH = "free/v2/past-weather.ashx";
@@ -23,10 +21,7 @@ namespace Ficha1
         private const int QRY_PER_SEC_ALLOWED = 5;
         private const int MS_PAUSE = 1000;
         private const int TIMEOUT = 5000;
-        
         #endregion
-
-
 
         private static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
         //private static readonly HashSet<string> validKeys2 = new HashSet<string> { "-local", "-startdate", "-enddate" };
@@ -418,10 +413,11 @@ namespace Ficha1
         {
             HistAndGraphData hgData = new HistAndGraphData(wData[0].date, wData[wData.Count - 1].date);
 
-            wData.ForEach(elem => hgData.AddTemps(int.Parse(elem.mintempC), int.Parse(elem.maxtempC)));
+            wData.ForEach(elem => {
+                hgData.AddTemps(int.Parse(elem.mintempC), int.Parse(elem.maxtempC));
 
-
-
+            });
+            
             return hgData;
         }
     }
