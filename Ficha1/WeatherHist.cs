@@ -25,7 +25,7 @@ namespace Ficha1
             //WeatherData wData = client.ReturnedData;
 
             //TODO change this name?
-            HistData wData = client.GetData();
+            HistAndGraphData wData = client.GetData();
 
 
             //Print Histogram
