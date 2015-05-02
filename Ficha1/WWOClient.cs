@@ -402,7 +402,13 @@ namespace Ficha1
         //TODO: como verificar que o resultado corresponde ao pedido (interval de datas)
         private HistAndGraphData ProcessReceivedData(List<Weather> wData)
         {
-            return new HistAndGraphData(wData[0].date, wData[wData.Count - 1].date);
+            HistAndGraphData hgData = new HistAndGraphData(wData[0].date, wData[wData.Count - 1].date);
+
+            wData.ForEach(elem => hgData.AddTemps(int.Parse(elem.mintempC), int.Parse(elem.maxtempC)));
+
+
+
+            return hgData;
         }
     }
 }
