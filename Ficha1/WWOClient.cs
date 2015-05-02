@@ -415,7 +415,7 @@ namespace Ficha1
 
             wData.ForEach(wElem => {
                 hgData.AddDailyTemps(int.Parse(wElem.mintempC), int.Parse(wElem.maxtempC));
-                if (hgData.SetDate(wElem.date) == true)
+                //if (hgData.SetDate(wElem.date) == true)
                     foreach (Hourly hourly in wElem.hourly)
                         hgData.AddHourlyTemps(int.Parse(hourly.time), int.Parse(hourly.tempC));
             });
