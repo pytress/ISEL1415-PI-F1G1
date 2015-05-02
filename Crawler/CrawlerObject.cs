@@ -26,7 +26,7 @@ namespace Crawler
         public CrawlerObject(string url,int lvl) {
             url = AdjustURL(url);
             Url = url;
-            Level= lvl;
+            Level= lvl;            
             client = new RestClient(url);
             req = new RestRequest(Method.GET);
             req.AddHeader("Accept", "text/html");
@@ -54,11 +54,13 @@ namespace Crawler
         }
 
         private void Merge(IDictionary<string,List<string>> dict) {
-            //TODO 
+            //TODO uniar os dois dicionários! Cuidado pk mesmo que as chaves sejam iguais, ainda tenho que fazer union das listas (valores da key)
+
+            Console.WriteLine("I'm in method Merge()");
         }
 
 
-        public void Execute()
+        public IDictionary<string, List<string>> Execute()
         {
             /* TODO
              *      1º Percorrer a pagina corrente, e actualizar dicionario com as palavras e respectivo link corrente (Cuidado
@@ -90,20 +92,47 @@ namespace Crawler
             string resp_content = resp.Content;
 
             //Agora quero só o body da resposta HTTP
-            int first;
-            string body = resp_content.Substring(first=resp_content.IndexOf("<body>"), resp_content.IndexOf("</body>")-first+"</body>".Length);
+            int first = resp_content.IndexOf("<body>");
+            int length = resp_content.IndexOf("</body>") - first + "</body>".Length;
+
+            string body = resp_content.Substring(first, length);
 
 
             FillListWithRefs(body);
+            FillDictWithWords(body);
 
-            //paralel for, para executar todos os pedidos referentes às strings presentes na lista hrefs! 
+            if (Level > 0)
+            {
+                //paralel for, para executar todos os pedidos referentes às strings presentes na lista hrefs! 
+                for (int i = 0; i < hrefs.Count; ++i)
+                {
+                    CrawlerObject crawler_temp = new CrawlerObject(hrefs[i], Level - 1);
+                    IDictionary<string, List<string>> dict_temp = crawler_temp.Execute();
+                    Merge(dict_temp);
+                }
+            }
+                // work work work... ... ...
 
-            // work work work... ... ...
-
-            Console.WriteLine(" PUMMMMMMMMMMMMMMM ");
-
+                Console.WriteLine(" I'm the return of method Execute() :)))))))))))) ");
+                return dict;
 
         } //close method Execute()
+
+
+
+        private void FillDictWithWords(string body) { 
+            char[] delimiterChars = { ' ', ',', '.', ':', '\t' , '<' , '>' , '=', '\r', '\n'};
+
+            string[] words = body.Split(delimiterChars);
+
+            foreach (string word in words)
+            {
+                if (dict.ContainsKey(word) == false) {
+                    dict.Add(word, new List<string>() { this.Url});
+                }
+            }
+        }
+
 
 
         private void FillListWithRefs(string body) {
@@ -112,11 +141,28 @@ namespace Crawler
             while (m.Success)
             {
                 string link = m.Groups[1].Value;
-                hrefs.Add(link); /*ATTENTION: link could be non-http. E.G. --> mailto:xxxxx@yyyyyy.pt  */
+                if(!hrefs.Contains(link)) {
+                    hrefs.Add(link); /*ATTENTION: link could be non-http. E.G. --> mailto:xxxxx@yyyyyy.pt  */
+                }
                 m = m.NextMatch();
             }
+
+            
         } //close method FillListWithRefs(string body)
 
+        public void FindWord(string word)
+        {
+            if (dict.ContainsKey(word))
+            {
+                List<string> links = dict[word];
+                foreach (string link in links) {
+                    Console.WriteLine(link + " ");
+                }
+            }
+            else {
+                Console.WriteLine("The word was not found!");
+            }
+        }//method FindWord
 
     }//close class
 }

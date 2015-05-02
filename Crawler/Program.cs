@@ -31,7 +31,7 @@ namespace Crawler
 
                 Console.WriteLine("Indique a palavra a pesquisar");
                 String word = Console.ReadLine();
-                //FindWord ... Get the word that it could be in the dictionary              
+                crawler.FindWord(word);// ... Get the word that it could be in the dictionary              
             }
 
             catch (ArgsException excep)
