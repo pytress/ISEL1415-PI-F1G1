@@ -28,9 +28,11 @@ namespace Crawler
 
 
         public CrawlerObject(string url,int lvl) {
-            this.url = AdjustURL(url);
-            level= lvl;            
-            client = new RestClient(url);
+            //this.url = AdjustURL(url);
+            this.url = url;
+            level= lvl;
+            Uri uri = new Uri(url,UriKind.Relative);
+            client = new RestClient(uri);
             req = new RestRequest(Method.GET);
             req.AddHeader("Accept", "text/html");
         } //constructor
@@ -38,6 +40,9 @@ namespace Crawler
         
         private string AdjustURL(string url)
         {
+            //Uri.TryCreate()
+            
+            
             string http="http://";
 
             if (!url.Contains("https") && !url.Contains("http")) { url = string.Concat(http, url); }           
@@ -49,10 +54,25 @@ namespace Crawler
         //    return dict; 
         //}
 
-        private void Merge(IDictionary<string,List<string>> dict) {
+        private void Merge(IDictionary<string,List<string>> childDict) {
             //TODO uniar os dois dicionários! Cuidado pk mesmo que as chaves sejam iguais, ainda tenho que fazer union das listas (valores da key)
 
             Console.WriteLine("I'm in method Merge()");
+
+            foreach (string s in childDict.Keys)
+            {
+                if (!dict.Keys.Contains(s))
+                    dict[s] = childDict[s];
+                else
+                {
+                    foreach (string link in childDict[s])
+                    {
+                        if (!dict[s].Contains(link))
+                            dict[s].Add(link);
+                    }
+                }
+            }
+
         }
 
 
@@ -99,7 +119,11 @@ namespace Crawler
             int first = resp_content.IndexOf("<body>");
             int length = resp_content.IndexOf("</body>") - first + "</body>".Length;
 
-            string body = resp_content.Substring(first, length);
+            string body;
+            if (first <= 0)
+                body = "";
+            else
+                body = resp_content.Substring(first, length);
 
 
             FillListWithRefs(body);
@@ -108,12 +132,13 @@ namespace Crawler
             if (level > 0)
             {
                 //paralel for, para executar todos os pedidos referentes às strings presentes na lista hrefs! 
-                for (int i = 0; i < hrefs.Count; ++i)
+                Parallel.For(0, hrefs.Count, i =>
+                //for (int i = 0; i < hrefs.Count; ++i)
                 {
                     CrawlerObject crawler_temp = new CrawlerObject(hrefs[i], level - 1);
                     IDictionary<string, List<string>> dict_temp = crawler_temp.Execute();
                     Merge(dict_temp);
-                }
+                });
             }
                 // work work work... ... ...
 
@@ -124,29 +149,32 @@ namespace Crawler
 
 
 
-        private void FillDictWithWords(string body) { 
-            char[] delimiterChars = { ' ', ',', '.', ':', '\t' , '<' , '>' , '=', '\r', '\n'};
+        private void FillDictWithWords(string body) {
+            Match m = Regex.Match(body, @"\b[a-z]*\b", RegexOptions.IgnoreCase);
 
-            string[] words = body.Split(delimiterChars);
-
-            foreach (string word in words)
+            while (m.Success)
             {
-                if (dict.ContainsKey(word) == false) {
-                    dict.Add(word, new List<string>() { url});
-                }
+                if (m.Value.Length > 0 && !dict.Keys.Contains(m.Value))
+                    dict[m.Value] = new List<string>() { url };
+
+                m = m.NextMatch();
             }
         }
 
 
 
         private void FillListWithRefs(string body) {
+            if (body == null || body.Length < 1) return;
+
             Match m = Regex.Match(body, @"<a.*?href=\""(.*?)\""", RegexOptions.Singleline);
 
             while (m.Success)
             {
                 string link = m.Groups[1].Value;
-                if(!hrefs.Contains(link)) {
-                    hrefs.Add(link); /*ATTENTION: link could be non-http. E.G. --> mailto:xxxxx@yyyyyy.pt  */
+                if(Uri.IsWellFormedUriString(link, UriKind.RelativeOrAbsolute) &&
+                    !hrefs.Contains(link) &&
+                    link.Length > 0) {
+                    hrefs.Add(link);
                 }
                 m = m.NextMatch();
             }
@@ -165,6 +193,9 @@ namespace Crawler
             }
             else {
                 Console.WriteLine("The word was not found!");
+                Console.Read();
+                foreach (string s in dict.Keys)
+                    Console.WriteLine(s);
             }
         }//method FindWord
 

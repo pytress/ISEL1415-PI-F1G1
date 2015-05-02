@@ -20,7 +20,8 @@ namespace Crawler
         {
             Console.Clear();
         
-            Console.WriteLine("Introduza um Url e um nível de profundidade \n E.g.--> http://www.abola.pt 2 ");
+            Console.WriteLine("Introduza um Url e um nível de profundidade \n E.g.--> http://www.abola.pt 2 \n");
+            Console.Write("> ");
             string arguments = Console.ReadLine();
             try
             {
@@ -29,7 +30,8 @@ namespace Crawler
 
                 crawler.Execute(); // :O  Hard work it's here!!! :'(
 
-                Console.WriteLine("Indique a palavra a pesquisar");
+                Console.WriteLine("\nIndique a palavra a pesquisar\n");
+                Console.Write("> ");
                 String word = Console.ReadLine();
                 crawler.FindWord(word);// ... Get the word that it could be in the dictionary              
             }
