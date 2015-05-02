@@ -84,8 +84,7 @@ namespace Ficha1
 
         private HistAndGraphData ProcessRequests(DateTime startDate, int nDays)
         {
-            //TODO: MAX_N_DAYS_PER_REQ must return a pair
-            if (nDays < MAX_N_DAYS_PER_REQ)
+            if (nDays <= MAX_N_DAYS_PER_REQ)
             {
                 //make http request
                 List<Weather> weather = RequestData2(startDate, nDays);
