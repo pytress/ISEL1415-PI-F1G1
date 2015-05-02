@@ -24,8 +24,11 @@ namespace Ficha1
             //Print Histogram
             //PrintHistogram(wData, client.LastReqResultStatus);
             ConsoleUtils.PrintHistrogram(wData);
-
             ConsoleUtils.Pause();
+
+            ConsoleUtils.PrintDaylyAvg(wData);
+            ConsoleUtils.Pause();
+            
         }
 
         static Dictionary<string, string> ValidateArgs(string[] args)

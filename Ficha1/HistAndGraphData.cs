@@ -97,7 +97,10 @@ namespace Ficha1
 
         internal void AddHourlyTemps(int time, int temp)
         {
-            accumHourlyTemps[time] += temp;
+            if (accumHourlyTemps.ContainsKey(time))
+                accumHourlyTemps[time] += temp;
+            else
+                accumHourlyTemps[time] = temp;
         }
 
         public static HistAndGraphData Merge(HistAndGraphData[] hgData)
@@ -134,7 +137,7 @@ namespace Ficha1
         //Check/validade a received date is in the defined date interval (when calling the constructor)
         private bool IsValidDate(DateTime date)
         {
-            return (date.CompareTo(startDate) < 0 || date.CompareTo(endDate) > 0) ? false : true;
+            return date.CompareTo(startDate) >= 0 && date.CompareTo(endDate) <= 0;
         }
 
 

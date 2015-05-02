@@ -38,7 +38,7 @@ namespace Ficha1
             List<int> temperatures = histogram.TempsCount.Keys.ToList();
             temperatures.Sort();
 
-            Console.Write("ºC |");
+            Console.WriteLine("ºC |");
 
             foreach (int temperature in temperatures)
             {
@@ -53,11 +53,37 @@ namespace Ficha1
             
             }
 
-            Console.Write("   |--------------------------------------");
-            Console.Write("                               Ocurrências");
+            Console.WriteLine("   |--------------------------------------");
+            Console.WriteLine("                               Ocorrências");
 
 
         }
+
+        public static void PrintDaylyAvg(HistAndGraphData daylyAvg)
+        {
+            Console.WriteLine("Dayly Average from {0} to {1}\n",
+                               daylyAvg.StartDate.ToString(WWOClient.DATE_FORMAT),
+                               daylyAvg.EndDate.ToString(WWOClient.DATE_FORMAT));
+
+            
+            Dictionary<int, double> hourlyAvgTemps = daylyAvg.GetHourlyAvgTemps();
+            List<int> hours = hourlyAvgTemps.Keys.ToList();
+            hours.Sort();
+
+            Console.WriteLine("H |");
+
+            foreach (int hour in hours)
+            {
+                int avg = (int)hourlyAvgTemps[hour];
+                Console.Write("{0} | ", hour);
+                Console.WriteLine(avg.ToString().PadLeft(avg, AVG_TEMP_CHR));
+            }
+
+            Console.WriteLine("   |--------------------------------------");
+            Console.WriteLine("                                        ºC");
+
+        }
+
 
     }
 }
