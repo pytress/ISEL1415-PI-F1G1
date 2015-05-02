@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ficha1
 {
-    class HistData//TODO: verificar se há e resolver problema da possivel inconsistencia entre intervalo de dias usado p/ criação do objeto e os que realmente estão inseridos
+    class HistData //TODO: verificar se há e resolver problema da possivel inconsistencia entre intervalo de dias usado p/ criação do objeto e os que realmente estão inseridos
     {
         private class TemperatureOccurences
         {

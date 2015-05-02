@@ -66,7 +66,7 @@ namespace Ficha1
             //Define start and end
             DateTime start = DateTime.Now; //?
 
-            HistData tmpData = ProcessRequests(40, start);
+            HistData tmpData = ProcessRequests(start, 40);
 
             //Calculate media
             //tmpData.CalculateAvg;
@@ -74,38 +74,33 @@ namespace Ficha1
             return tmpData;
         }
 
-        private HistData ProcessRequests(int days, DateTime start)
+        private HistData ProcessRequests(DateTime startDate, int nDays)
         {
-            //TODO MAX_N_DAYS_PER_REQ must return a pair
-            if (days < MAX_N_DAYS_PER_REQ)
+            //TODO: MAX_N_DAYS_PER_REQ must return a pair
+            if (nDays < MAX_N_DAYS_PER_REQ)
             {
-                //Faz pedido
-                //Faz contagem
-                // devolve histogram
+                //faz pedido HTTP
+                //faz contagem dos resltados
+                //devolve histogram
             }
             else
             {
+                int days = nDays / 2;                                      //split number of days in half
                 HistData[] hData = new HistData[2];
 
                 Parallel.For(0, 2, i =>
                 {
-                    //calculate days
-                    //Calculate new start
-                    int d = days % 2 == 0? days/2 : (days/2)+i;
+                    DateTime adjustedStart = startDate.AddDays(days * i); //start depends on iteration; first half interval is always the size of the integer division
+                    int adjustedDays = days + (nDays % 2) * i;            //the number of days can be diferent for the second half interval (if number of days is odd)
 
-                    hData[i] = ProcessRequests(d, start.AddDays(i * d));
+                    hData[i] = ProcessRequests(adjustedStart, adjustedDays);
                 });
 
                 return HistData.Merge(hData);
             }
-
-                
-            
             
             return null;
         }
-
-               
         
         public void RequestAsyncData()
         {
