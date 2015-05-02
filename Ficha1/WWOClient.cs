@@ -94,13 +94,16 @@ namespace Ficha1
             }
             else
             {
-                int days = nDays / 2;                                      //split number of days in half
+                //split number of days in half
+                int days = nDays / 2;                                      
                 HistAndGraphData[] hData = new HistAndGraphData[2];
 
                 Parallel.For(0, 2, i =>
                 {
-                    DateTime adjustedStart = startDate.AddDays(days * i); //start depends on iteration; first half interval is always the size of the integer division
-                    int adjustedDays = days + (nDays % 2) * i;            //the number of days can be diferent for the second half interval (if number of days is odd)
+                    //start depends on iteration; first half interval is always the size of the integer division
+                    //the number of days can be diferent for the second half interval (if number of days is odd)
+                    DateTime adjustedStart = startDate.AddDays(days * i); 
+                    int adjustedDays = days + (nDays % 2) * i;            
 
                     hData[i] = ProcessRequests(adjustedStart, adjustedDays);
                 });
