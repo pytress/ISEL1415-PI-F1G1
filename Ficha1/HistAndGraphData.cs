@@ -7,7 +7,7 @@ namespace Ficha1
 {
     class HistAndGraphData
     {
-        private class TemperatureOccurences
+        public class TemperatureOccurences
         {
             private int minNOccurences;
             internal int MinNOccurences { get { return minNOccurences; } }
@@ -35,6 +35,7 @@ namespace Ficha1
         public DateTime EndDate { get { return endDate; } }
 
         private Dictionary<int, TemperatureOccurences> tempsCount;
+        public Dictionary<int, TemperatureOccurences> TempsCount { get { return tempsCount; } }
         //lista de horas com respetivo acumulador de temps (so no final se faz media)
 
         public HistAndGraphData(string startDate, string endDate)
@@ -55,7 +56,12 @@ namespace Ficha1
             tempsCount = new Dictionary<int, TemperatureOccurences>();
         }
 
-        public void AddTemps(int min, int max)
+        public bool SetDate(string setDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddDailyTemps(int min, int max)
         {
             //FOR MINIMUM TEMPERATURES
             if (tempsCount.ContainsKey(min)) tempsCount[min].IncMinOcc(); //in case there is already this minimum temperature registered
@@ -64,6 +70,11 @@ namespace Ficha1
             //FOR MAXIMUM TEMPERATURES
             if (tempsCount.ContainsKey(max)) tempsCount[max].IncMaxOcc(); //in case there is already this maximum temperature registered
             else tempsCount[max] = new TemperatureOccurences(0, 1);       //in case there isn't already this maximum temperature registered
+        }
+
+        internal void AddHourlyTemps(int time, int temp)
+        {
+            throw new NotImplementedException();
         }
 
         public static HistAndGraphData Merge(HistAndGraphData[] hData)
