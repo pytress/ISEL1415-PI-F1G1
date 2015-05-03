@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace Ficha1
 {
+    public class Error
+    {
+        public string msg { get; set; }
+    }
+
     public class Request
     {
         public string query { get; set; }
@@ -70,7 +75,7 @@ namespace Ficha1
 
     public class Data
     {
-        public List<string> error { get; set; }
+        public List<Error> error { get; set; }
         public List<Request> request { get; set; }
         public List<Weather> weather { get; set; }
 

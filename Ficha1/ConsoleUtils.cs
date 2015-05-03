@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ficha1
 {
     class ConsoleUtils
     {
-
         const char TEMP_MIN_CHR = '*';
         const char TEMP_MAX_CHR = '#';
         const char AVG_TEMP_CHR = '>';
-
 
         public static void Pause()
         {
@@ -28,12 +24,12 @@ namespace Ficha1
             Console.Read();
         }
 
-        public static void PrintHistrogram(HistAndGraphData histogram)
+        public static void PrintHistogram(HistAndGraphData histogram)
         {
-
-            Console.WriteLine("Temperature Histogram from {0} to {1}\n",
+            Console.WriteLine("Temperature Histogram from {0} to {1} in {2}\n",
                                histogram.StartDate.ToString(WWOClient.DATE_FORMAT),
-                               histogram.EndDate.ToString(WWOClient.DATE_FORMAT));
+                               histogram.EndDate.ToString(WWOClient.DATE_FORMAT),
+                               histogram.Local);
 
             List<int> temperatures = histogram.TempsCount.Keys.ToList();
             temperatures.Sort();
@@ -52,24 +48,23 @@ namespace Ficha1
                 Console.WriteLine(max.ToString().PadLeft(max + 1, TEMP_MAX_CHR));
 
                 Console.Write("{0,2} {1}|", temperature, TEMP_MIN_CHR);
-                Console.WriteLine(min.ToString().PadLeft(min+1, TEMP_MIN_CHR));
-            
+                Console.WriteLine(min.ToString().PadLeft(min + 1, TEMP_MIN_CHR));
             }
 
             Console.WriteLine("    |--------------------------------------");
-            Console.WriteLine("                                Ocorrências(Total: {0} | nDays: {1})", occAcum, histogram.NDays);
-            Console.WriteLine("Legenda: {0} Temperaturas máximas", TEMP_MAX_CHR);
-            Console.WriteLine("         {0} Temperaturas minimas\n", TEMP_MIN_CHR);
-
+            Console.WriteLine("                                Ocurrences");
+            Console.WriteLine("Legend: {0} Maximum temperatures", TEMP_MAX_CHR);
+            Console.WriteLine("        {0} Minimum temperatures\n", TEMP_MIN_CHR);
+            Console.WriteLine("Total occurences: {0} | Number of days with data: {1})\n", occAcum, histogram.NDays);
         }
 
         public static void PrintDailyAvg(HistAndGraphData dailyAvg)
         {
-            Console.WriteLine("Daily Average from {0} to {1}\n",
+            Console.WriteLine("Daily Average from {0} to {1} in {2}\n",
                                dailyAvg.StartDate.ToString(WWOClient.DATE_FORMAT),
-                               dailyAvg.EndDate.ToString(WWOClient.DATE_FORMAT));
+                               dailyAvg.EndDate.ToString(WWOClient.DATE_FORMAT),
+                               dailyAvg.Local);
 
-            
             Dictionary<int, int> hourlyAvgTemps = dailyAvg.AvgHourlyTemps;
             List<int> hours = hourlyAvgTemps.Keys.ToList();
             hours.Sort();
@@ -85,9 +80,6 @@ namespace Ficha1
 
             Console.WriteLine("   |--------------------------------------");
             Console.WriteLine("                                        ºC");
-
         }
-
-
     }
 }

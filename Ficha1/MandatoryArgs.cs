@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ficha1
 {
@@ -24,23 +21,4 @@ namespace Ficha1
             return true;
         }
     }
-
-    /*
-    class WWOMandatoryArgs<T> : IArgumentVerifier<T>
-    {
-        private Dictionary<T,T> argsToVerify;
-        private T susd;
-
-        public WWOMandatoryArgs(Dictionary<T,T> args)
-        {
-            argsToVerify = args;
-        }
-
-        public bool Verify(T[] keys)
-        {
-            throw new NotImplementedException();
-        }
-    }
-    */
 }
-

@@ -37,6 +37,9 @@ namespace Ficha1
             //}
         }
 
+        private string local;
+        public string Local { get { return local; } }
+
         private int dayCounter; //counts the number of data days the object contains
         public int NDays { get { return dayCounter; } }
         private ArrayList daysWithData; //array to check which data days are already counted
@@ -58,8 +61,9 @@ namespace Ficha1
         private Dictionary<int, int> avgHourlyTemps;
         public Dictionary<int, int> AvgHourlyTemps{get{return avgHourlyTemps;}}
 
-        public HistAndGraphData(string startDate, string endDate, int nHours) //TODO: podemos verificar correção de dados porque sabemos quantos dias e quantas horas
+        public HistAndGraphData(string startDate, string endDate, int nHours, string local) //TODO: podemos verificar correção de dados porque sabemos quantos dias e quantas horas
         {
+            this.local = local;
             this.startDate = DateTime.Parse(startDate);
             this.endDate = DateTime.Parse(endDate);
 
@@ -103,11 +107,12 @@ namespace Ficha1
 
         public static HistAndGraphData Merge(HistAndGraphData[] hgData)
         {
+            string local = hgData[0].Local;
             string startDate = hgData[0].StartDate.ToString(WWOClient.DATE_FORMAT);
             string endDate = hgData[hgData.Length-1].EndDate.ToString(WWOClient.DATE_FORMAT);;
             int nHours = hgData[0].accumHourlyTemps.Count;
 
-            HistAndGraphData newHGData = new HistAndGraphData(startDate, endDate, nHours);
+            HistAndGraphData newHGData = new HistAndGraphData(startDate, endDate, nHours, local);
 
             for (int i = 0; i < hgData.Length; ++i)
                     newHGData.Append(hgData[i]);

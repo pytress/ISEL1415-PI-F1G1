@@ -16,9 +16,10 @@ namespace Ficha1
         private const string HOST = "api.worldweatheronline.com";
         private const string API_PATH = "free/v2/past-weather.ashx";
         private const string API_KEY = "e36e230efd71f15bbc15a97c39c38";
+        private const string ALT_API_KEY = "085d2036a11f120f140e651c821b5";
         private const string RESP_FORMAT = "json";
         private const int DEFAULT_TIME_INTERVAL = 3;
-        private const int MAX_N_DAYS_PER_REQ = 5;
+        private const int MAX_N_DAYS_PER_REQ = 10;
         private const int QRY_PER_SEC_ALLOWED = 5;
         private const int MS_PAUSE = 1000;
         private const int TIMEOUT = 5000;
@@ -39,7 +40,7 @@ namespace Ficha1
         //private RestResponse rResp;
         //private string rRespContent;
 
-        private string lastReqResultStatus;
+        private volatile string lastReqResultStatus;
         public string LastReqResultStatus { get { return lastReqResultStatus; } }
 
         /*
@@ -72,7 +73,8 @@ namespace Ficha1
             HistAndGraphData tmpData = ProcessRequests(start, nDays);
 
             //Calculate media
-            tmpData.CalculateAvg();
+            if (tmpData != null) //if the request returned some data
+                tmpData.CalculateAvg();
 
             return tmpData;
         }
@@ -118,36 +120,37 @@ namespace Ficha1
         
         public List<Weather> RequestData(DateTime startDate, int nDays)
         {
-
             var request = new RestRequest(API_PATH);
             request.RequestFormat = DataFormat.Json; //TODO: necessary?
             request.RootElement = "data";
 
             //Build query string
-            request.AddQueryParameter("key", API_KEY);        //registered key to access API
+            request.AddQueryParameter("key", ALT_API_KEY);        //registered key to access API
             request.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
             request.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
             request.AddQueryParameter("date", startDate.ToString(DATE_FORMAT));
             request.AddQueryParameter("enddate", startDate.AddDays(nDays-1).ToString(DATE_FORMAT));
 
-
             var rResp = ExecuteRequest(request);
-            while (rResp.StatusCode.ToString().Equals("429")) //To many requests (WWO API Sucks!)
+            Console.WriteLine("Our result status: {0}", lastReqResultStatus);
+            if (rResp == null) return null; //No data to desserialize; WWO API return 400 Bad Request
+
+            Console.WriteLine("Rest status code: {0}", rResp.StatusCode);
+            Console.WriteLine("Rest status descrip: {0}", rResp.StatusDescription);
+            
+            while (lastReqResultStatus == "429") //429 Too Many Requests (WWO API Sucks!); there is no HttpStatusCode for 429
             {
                 Thread.Sleep(MS_PAUSE);
                 rResp = ExecuteRequest(request);
             }
+            Console.WriteLine("Our result status: {0}", lastReqResultStatus);
+            if (rResp == null) return null;
 
-            if (rResp != null)
-            {
-                Data wwoData = rResp.Data;
-                if (!ErrorInBody(wwoData))
-                {
-                    return wwoData.weather;
-                }
-            }
+            Data wwoData = rResp.Data;
+            if (ErrorInBody(wwoData))
+                return null;
 
-            return null;
+            return wwoData.weather;
         }
 
         //TODO: this method was replaced by RequestAsyncData(); remove this one.
@@ -273,16 +276,16 @@ namespace Ficha1
 
         private bool ErrorInBody(Data data)
         {
-            {
-                if (data!= null && data.error == null)
-                    return false;
+            if (data == null) return true;
 
-                Console.WriteLine("### MSG: Request OK, but no valid data => {0}", 
-                                    data==null?"":data.error.First()); //DEBUG
-                
-                lastReqResultStatus = "404 Not Found"; //TODO ??(HF)
-                return true;
-            }
+            if (data!= null && data.error == null) return false;
+
+            Console.WriteLine("### ERROR: Request & Reply OK, but no valid data received!"); //DEBUG
+            Console.WriteLine("### ERROR: Message from server - {0}", data.error[0].msg);    //DEBUG
+            
+            lastReqResultStatus = "404 Not Found"; //we decided to consider this case as a 404
+
+            return true;
         }
 
         /**
@@ -364,18 +367,17 @@ namespace Ficha1
         private HistAndGraphData ProcessReceivedData(List<Weather> wData)
         {
             //Create new HistAndGraphData object
+            string local = usefullArgPairs[validKeys[0]]; //mandatory argument (local)
             string startDate = wData[0].date;
             string endDate = wData[wData.Count - 1].date;
             int nHours = wData[0].hourly.Count;
-            HistAndGraphData hgData = new HistAndGraphData(startDate, endDate, nHours);
-
+            HistAndGraphData hgData = new HistAndGraphData(startDate, endDate, nHours, local);
 
             wData.ForEach(wElem => {
                 //Add daily temperatures
                 int min = int.Parse(wElem.mintempC);
                 int max = int.Parse(wElem.maxtempC);
                 hgData.AddDailyTemps(min, max);
-
 
                 //Add hourly temperatures
                 foreach (Hourly hourly in wElem.hourly)
