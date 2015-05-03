@@ -25,16 +25,6 @@ namespace Ficha1
 
             internal void IncMinOcc() { ++minNOccurences; }
             internal void IncMaxOcc() { ++maxNOccurences; }
-
-            //internal void AddMaxOcc(TemperatureOccurences temperatureOccurences)
-            //{
-            //    throw new NotImplementedException();
-            //}
-
-            //internal void AddMinOcc(int p)
-            //{
-            //    throw new NotImplementedException();
-            //}
         }
 
         private string local;
@@ -49,7 +39,6 @@ namespace Ficha1
         private DateTime endDate;   //included end date (earlier) of the interval passed to the object constructor
         public DateTime EndDate { get { return endDate; } }
 
-        //TODO: renomear para dailyTempsCount
         //structure to hold temperature and corresponding number of minimum and maximum occurences in the date intervale
         private Dictionary<int, TemperatureOccurences> tempsCount;
         public Dictionary<int, TemperatureOccurences> TempsCount { get { return tempsCount; } }
@@ -61,7 +50,7 @@ namespace Ficha1
         private Dictionary<int, int> avgHourlyTemps;
         public Dictionary<int, int> AvgHourlyTemps{get{return avgHourlyTemps;}}
 
-        public HistAndGraphData(string startDate, string endDate, int nHours, string local) //TODO: podemos verificar correção de dados porque sabemos quantos dias e quantas horas
+        public HistAndGraphData(string startDate, string endDate, int nHours, string local)
         {
             this.local = local;
             this.startDate = DateTime.Parse(startDate);
@@ -95,10 +84,6 @@ namespace Ficha1
 
         internal void AddHourlyTemps(int time, int temp)
         {
-            //TODO delete this
-            //if (!accumHourlyTemps.ContainsKey(time)) throw new InvalidOperationException("Day hourly time not expected!");
-            //accumHourlyTemps[time] += temp;
-            
             if (accumHourlyTemps.ContainsKey(time))
                 accumHourlyTemps[time] += temp;
             else
@@ -120,28 +105,9 @@ namespace Ficha1
             return newHGData;
         }
 
-        ////returns a stucture with the same hours as the ones in 'accumHourlyTemps' and respective average temperature
-        //public Dictionary<int, double> GetHourlyAvgTemps()
-        //{
-        //    if (dayCounter == 0)
-        //        throw new InvalidOperationException("None data days present!");
-        //    //if (TimeSpan.Compare(TimeSpan.FromDays(dayCounter), endDate.Subtract(startDate)) != 0)
-        //    if (endDate.Subtract(startDate).TotalDays != dayCounter)
-        //        throw new InvalidOperationException("Incomplete or inconsistent data!");
-
-        //    Dictionary<int, double> AvgHourlyTemps = new Dictionary<int, double>();
-
-        //    foreach (KeyValuePair<int, int> kVPair in accumHourlyTemps)
-        //    {
-        //        AvgHourlyTemps[kVPair.Key] = (double)kVPair.Value / dayCounter;
-        //    }
-
-        //    return AvgHourlyTemps;
-        //}
-
         /********************************************** PRIVATE METHODS ***************************************************/
 
-        //Check/validade a received date is in the defined date interval (when calling the constructor)
+        //Check/validate a received date is in the defined date interval (when calling the constructor)
         private bool IsValidDate(DateTime date)
         {
             return date.CompareTo(startDate) >= 0 && date.CompareTo(endDate) <= 0;
@@ -150,17 +116,6 @@ namespace Ficha1
 
         private void Append(HistAndGraphData hgData)
         {
-            //TODO delete this
-            //foreach (KeyValuePair<int, TemperatureOccurences> kVPair in hgData.TempsCount)
-            //    if (tempsCount.Count == 0)
-            //        tempsCount.Add(kVPair.Key, kVPair.Value);
-            //    else
-            //    {
-            //        tempsCount[kVPair.Key].AddMinOcc(kVPair.Value.MinNOccurences);
-            //        tempsCount[kVPair.Key].AddMaxOcc(kVPair.Value);
-            //    }
-
-
             foreach (int temperature in hgData.tempsCount.Keys)
             {
                 if (!tempsCount.ContainsKey(temperature))
@@ -174,17 +129,7 @@ namespace Ficha1
                 }
             }
 
-
-            //foreach (KeyValuePair<int, int> kVPair in hgData.accumHourlyTemps) //acesso ao campo privado do parametro!?
-            //{
-            //    ++dayCounter;
-            //    if (accumHourlyTemps.Count == 0)
-            //        accumHourlyTemps.Add(kVPair.Key, kVPair.Value);
-            //    else
-            //        accumHourlyTemps[kVPair.Key] += kVPair.Value;
-            //}
-
-            foreach (int hourly in hgData.accumHourlyTemps.Keys)    //TODO acesso ao campo privado do parametro!?
+            foreach (int hourly in hgData.accumHourlyTemps.Keys)
             {
                 if (!accumHourlyTemps.ContainsKey(hourly))
                     accumHourlyTemps.Add(hourly, hgData.accumHourlyTemps[hourly]);

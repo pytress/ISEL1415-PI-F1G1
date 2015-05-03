@@ -38,7 +38,7 @@ namespace Ficha1
 
         static Dictionary<string, string> ValidateArgs(string[] args)
         {
-            if (args.Length == 0) //no args received or passed frmo console
+            if (args.Length == 0) //no args received or passed from console
             {
                 Console.WriteLine("### ALERT: No arguments passed! At least a local is needed!\n");
                 ConsoleUtils.Pause("A demo run will be done. Press ENTER...");

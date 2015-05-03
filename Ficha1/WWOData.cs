@@ -82,25 +82,6 @@ namespace Ficha1
         public string ReferenceLocal { get { return request[0].query; } }
         public string FirstDate { get { return weather[0].date; } }
         public string LastDate { get { return weather[weather.Count - 1].date; } }
-
-        internal void ShowContent() //DEBUG: to show Data content
-        {
-            string firstDay = null, lastDay = null;
-            
-            Console.WriteLine("------------------------------------");
-            request.ForEach(rq => Console.WriteLine("Local: {0}", rq.query));
-            weather.ForEach(wt => {
-                if (firstDay == null)
-                    firstDay = wt.date;
-                lastDay = wt.date;
-                Console.WriteLine(" Date: {0}", wt.date);
-                Console.WriteLine("  Max: {0}C", wt.maxtempC);
-                Console.WriteLine("  Min: {0}C", wt.mintempC);
-                wt.hourly.ForEach(h => Console.WriteLine("     At {0}hours : {1}C", h.time, h.tempC));
-            });
-            Console.WriteLine("------------------------------------");
-            Console.WriteLine("First day was {0} and last day was {1}; {2} days", firstDay, lastDay, weather.Count);
-        }
     }
 
     public class WeatherData
