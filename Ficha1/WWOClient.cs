@@ -413,20 +413,27 @@ namespace Ficha1
         //TODO: como verificar que o resultado corresponde ao pedido (interval de datas)
         private HistAndGraphData ProcessReceivedData(List<Weather> wData)
         {
+            //Create new HistAndGraphData object
             string startDate = wData[0].date;
             string endDate = wData[wData.Count - 1].date;
             int nHours = wData[0].hourly.Count;
-            
             HistAndGraphData hgData = new HistAndGraphData(startDate, endDate, nHours);
 
+
             wData.ForEach(wElem => {
+                //Add daily temperatures
                 int min = int.Parse(wElem.mintempC);
                 int max = int.Parse(wElem.maxtempC);
-                
                 hgData.AddDailyTemps(min, max);
-                //if (hgData.SetDate(wElem.date) == true)
-                    foreach (Hourly hourly in wElem.hourly)
-                        hgData.AddHourlyTemps(int.Parse(hourly.time), int.Parse(hourly.tempC));
+
+
+                //Add hourly temperatures
+                foreach (Hourly hourly in wElem.hourly)
+                {
+                    int time = int.Parse(hourly.time);
+                    int temp = int.Parse(hourly.tempC);
+                    hgData.AddHourlyTemps(time,temp);
+                }
             });
             
             return hgData;

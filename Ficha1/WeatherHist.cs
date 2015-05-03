@@ -26,7 +26,7 @@ namespace Ficha1
             ConsoleUtils.PrintHistrogram(wData);
             ConsoleUtils.Pause();
 
-            ConsoleUtils.PrintDaylyAvg(wData);
+            ConsoleUtils.PrintDailyAvg(wData);
             ConsoleUtils.Pause();
             
         }

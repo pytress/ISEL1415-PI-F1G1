@@ -59,14 +59,14 @@ namespace Ficha1
 
         }
 
-        public static void PrintDaylyAvg(HistAndGraphData daylyAvg)
+        public static void PrintDailyAvg(HistAndGraphData dailyAvg)
         {
-            Console.WriteLine("Dayly Average from {0} to {1}\n",
-                               daylyAvg.StartDate.ToString(WWOClient.DATE_FORMAT),
-                               daylyAvg.EndDate.ToString(WWOClient.DATE_FORMAT));
+            Console.WriteLine("Daily Average from {0} to {1}\n",
+                               dailyAvg.StartDate.ToString(WWOClient.DATE_FORMAT),
+                               dailyAvg.EndDate.ToString(WWOClient.DATE_FORMAT));
 
             
-            Dictionary<int, double> hourlyAvgTemps = daylyAvg.GetHourlyAvgTemps();
+            Dictionary<int, double> hourlyAvgTemps = dailyAvg.GetHourlyAvgTemps();
             List<int> hours = hourlyAvgTemps.Keys.ToList();
             hours.Sort();
 
