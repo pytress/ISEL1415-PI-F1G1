@@ -21,7 +21,7 @@ namespace Ficha1
         private const int DEFAULT_TIME_INTERVAL = 3;
         private const int MAX_N_DAYS_PER_REQ = 10;
         private const int QRY_PER_SEC_ALLOWED = 5;
-        private const int MS_PAUSE = 1000;
+        private const int MS_PAUSE = 5000;
         private const int TIMEOUT = 5000;
         public const string DATE_FORMAT = "yyyy-MM-dd";
         #endregion
