@@ -13,6 +13,10 @@ namespace Ficha1
             Dictionary<string, string> keyValuePairs = ValidateArgs(args);
 
             if (keyValuePairs == null)
+            {
+                ConsoleUtils.Pause();
+                return;
+            }
 
             //Instantiate client and request data
             WWOClient client = new WWOClient(keyValuePairs);
