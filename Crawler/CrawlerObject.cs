@@ -128,6 +128,7 @@ namespace Crawler
             {
                 string link = m.Groups[1].Value;
 
+                //If uri is relative, transform it in absolute
                 if (Uri.IsWellFormedUriString(link, UriKind.Relative))
                     link = url + "/" + link;
                 
