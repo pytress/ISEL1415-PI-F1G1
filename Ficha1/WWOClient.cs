@@ -118,6 +118,7 @@ namespace Ficha1
             {
                 Thread.Sleep(MS_PAUSE);
                 rResp = ExecuteRequest(request);
+                Console.WriteLine("Too many requests. Waiting for response...");
             }
             if (rResp == null) return null;
 

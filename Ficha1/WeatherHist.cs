@@ -43,7 +43,7 @@ namespace Ficha1
                 Console.WriteLine("### ALERT: No arguments passed! At least a local is needed!\n");
                 ConsoleUtils.Pause("A demo run will be done. Press ENTER...");
 
-                args = new String[] { "lixo=?", "-local=Lisbon", "=", "-startdate=2015-04-01", "-enddate=2015-04-02", "xuxu=9=hy", "-asq?!" };
+                args = new String[] { "lixo=?", "-local=Lisbon", "=", "-startdate=2015-04-01", "-enddate=2015-04-16", "xuxu=9=hy", "-asq?!" };
 
                 Console.WriteLine("List of parameters passed:");
                 for (int idx = 0; idx < args.Length; ++idx)
