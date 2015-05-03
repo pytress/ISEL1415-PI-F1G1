@@ -32,6 +32,7 @@ namespace Crawler
             this.url = url;
             level= lvl;
             client = new RestClient(this.url);
+            client.FollowRedirects = false;
             req = new RestRequest(Method.GET);
             req.AddHeader("Accept", "text/html");
         } //constructor
