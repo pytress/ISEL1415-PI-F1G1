@@ -21,6 +21,7 @@ namespace Crawler
         //public string Url { get; set; }
         private int level;
         private string url;
+        private static List<string> visitedUrls = new List<string>();
 
         private RestClient client;
         private RestRequest req;
@@ -28,36 +29,19 @@ namespace Crawler
 
 
         public CrawlerObject(string url,int lvl) {
-            //this.url = AdjustURL(url);
             this.url = url;
             level= lvl;
-            Uri uri = new Uri(url,UriKind.Relative);
-            client = new RestClient(uri);
+            client = new RestClient(this.url);
             req = new RestRequest(Method.GET);
             req.AddHeader("Accept", "text/html");
         } //constructor
 
         
-        private string AdjustURL(string url)
-        {
-            //Uri.TryCreate()
-            
-            
-            string http="http://";
-
-            if (!url.Contains("https") && !url.Contains("http")) { url = string.Concat(http, url); }           
-            return url;
-        }        
-
-
         //public IDictionary<string, List<string>> GetDict() { 
         //    return dict; 
         //}
 
         private void Merge(IDictionary<string,List<string>> childDict) {
-            //TODO uniar os dois dicionários! Cuidado pk mesmo que as chaves sejam iguais, ainda tenho que fazer union das listas (valores da key)
-
-            Console.WriteLine("I'm in method Merge()");
 
             foreach (string s in childDict.Keys)
             {
@@ -125,7 +109,7 @@ namespace Crawler
             else
                 body = resp_content.Substring(first, length);
 
-
+            //TODO this must be done at the same time, not separatelly
             FillListWithRefs(body);
             FillDictWithWords(body);
 
@@ -140,10 +124,11 @@ namespace Crawler
                     Merge(dict_temp);
                 });
             }
-                // work work work... ... ...
 
-                Console.WriteLine(" I'm the return of method Execute() :)))))))))))) ");
-                return dict;
+            //Progress bar    
+            Console.Write(".");
+            
+            return dict;
 
         } //close method Execute()
 
@@ -171,10 +156,16 @@ namespace Crawler
             while (m.Success)
             {
                 string link = m.Groups[1].Value;
-                if(Uri.IsWellFormedUriString(link, UriKind.RelativeOrAbsolute) &&
+
+                if (Uri.IsWellFormedUriString(link, UriKind.Relative))
+                    link = url + "/" + link;
+                
+                if(Uri.IsWellFormedUriString(link, UriKind.Absolute) &&
                     !hrefs.Contains(link) &&
-                    link.Length > 0) {
+                    link.Length > 0 &&
+                    !visitedUrls.Contains(link)) {
                     hrefs.Add(link);
+                    visitedUrls.Add(link);
                 }
                 m = m.NextMatch();
             }
@@ -193,9 +184,6 @@ namespace Crawler
             }
             else {
                 Console.WriteLine("The word was not found!");
-                Console.Read();
-                foreach (string s in dict.Keys)
-                    Console.WriteLine(s);
             }
         }//method FindWord
 

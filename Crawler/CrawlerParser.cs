@@ -39,8 +39,8 @@ namespace Crawler
                     throw new ArgsException("Não introduziu nenhum valor Inteiro para o nível de profundidade");
                 }
 
-                if (!url.Contains("http") && !url.Contains("https"))
-                    url = String.Concat("http://", url);
+                if (Uri.IsWellFormedUriString(url, UriKind.Relative))
+                    url = "http://" + url;
                 
                 co = new CrawlerObject(url, value);
             }

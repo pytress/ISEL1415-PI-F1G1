@@ -28,12 +28,20 @@ namespace Crawler
                 IParser<CrawlerObject> parser = new CrawlerParser();
                 CrawlerObject crawler = parser.Parse(arguments);
 
+                Console.Write("\nCrawling ...");
                 crawler.Execute(); // :O  Hard work it's here!!! :'(
 
-                Console.WriteLine("\nIndique a palavra a pesquisar\n");
+                Console.WriteLine("\n\nIndique a palavra a pesquisar (escreva \"sair\" para terminar)\n");
                 Console.Write("> ");
                 String word = Console.ReadLine();
-                crawler.FindWord(word);// ... Get the word that it could be in the dictionary              
+                while (word != "sair")
+                {
+                    Console.WriteLine();
+                    crawler.FindWord(word);// ... Get the word that it could be in the dictionary              
+                    Console.Write("\n> ");
+                    word = Console.ReadLine();
+                }
+
             }
 
             catch (ArgsException excep)
@@ -46,8 +54,8 @@ namespace Crawler
                            ..................... */
 
             finally {
-                Console.WriteLine("Press any key to exit :)");
-                Console.ReadKey();
+                //Console.WriteLine("Press any key to exit :)");
+                //Console.ReadKey();
             }
 
         }//MAIN
