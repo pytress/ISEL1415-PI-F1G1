@@ -44,15 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArgumentsException.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="ConsoleUtils.cs" />
-    <Compile Include="GraphData.cs" />
     <Compile Include="HistAndGraphData.cs" />
-    <Compile Include="HistData.cs" />
-    <Compile Include="Histogram.cs" />
-    <Compile Include="WWOAsyncRequests.cs" />
     <Compile Include="WWOData.cs" />
     <Compile Include="WWOClient.cs" />
     <Compile Include="MandatoryArgs.cs" />
