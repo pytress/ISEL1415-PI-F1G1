@@ -73,7 +73,7 @@ namespace Ficha1
             HistAndGraphData tmpData = ProcessRequests(start, nDays);
 
             //Calculate media
-            //tmpData.CalculateAvg;
+            tmpData.CalculateAvg();
 
             return tmpData;
         }
@@ -83,7 +83,7 @@ namespace Ficha1
             if (nDays <= MAX_N_DAYS_PER_REQ)
             {
                 //make http request
-                List<Weather> weather = RequestData2(startDate, nDays);
+                List<Weather> weather = RequestData(startDate, nDays);
 
                 //Process data and return
                 return ProcessReceivedData(weather);
@@ -94,7 +94,8 @@ namespace Ficha1
                 int days = nDays / 2;                                      
                 HistAndGraphData[] hData = new HistAndGraphData[2];
 
-                Parallel.For(0, 2, i =>
+                //Parallel.For(0, 2, i =>
+                for(int i = 0; i < 2; ++i)
                 {
                     //start depends on iteration; first half interval is always the size of the integer division
                     //the number of days can be diferent for the second half interval (if number of days is odd)
@@ -102,71 +103,71 @@ namespace Ficha1
                     int adjustedDays = days + (nDays % 2) * i;            
 
                     hData[i] = ProcessRequests(adjustedStart, adjustedDays);
-                });
+                }//);
 
                 return HistAndGraphData.Merge(hData);
             }
             
         }
         
-        public void RequestAsyncData()
-        {
-            //number of HTTP request necessary to obtain the data requested
-            int nReq = (GetNDaysRequested() + MAX_N_DAYS_PER_REQ - 1) / MAX_N_DAYS_PER_REQ;
+        //public void RequestAsyncData()
+        //{
+        //    //number of HTTP request necessary to obtain the data requested
+        //    int nReq = (GetNDaysRequested() + MAX_N_DAYS_PER_REQ - 1) / MAX_N_DAYS_PER_REQ;
 
-            //Create list of requests
-            WWOAsyncRequests requestList = new WWOAsyncRequests();
+        //    //Create list of requests
+        //    WWOAsyncRequests requestList = new WWOAsyncRequests();
 
-            for (int i = 0; i < nReq; ++i)
-            {
-                var request = new RestRequest(API_PATH);
-                request.RequestFormat = DataFormat.Json; //TODO: necessary?
-                request.RootElement = "data";
+        //    for (int i = 0; i < nReq; ++i)
+        //    {
+        //        var request = new RestRequest(API_PATH);
+        //        request.RequestFormat = DataFormat.Json; //TODO: necessary?
+        //        request.RootElement = "data";
 
-                //Build query string with mandatory parameters
-                request.AddQueryParameter("key", API_KEY);        //registered key to access API
-                request.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
-                request.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
-                AddOptionalParameters(request);
+        //        //Build query string with mandatory parameters
+        //        request.AddQueryParameter("key", API_KEY);        //registered key to access API
+        //        request.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
+        //        request.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
+        //        AddOptionalParameters(request);
 
-                //to avoid status error 429 Too Many Requests
-                if (i % QRY_PER_SEC_ALLOWED == 0)
-                    Thread.Sleep(MS_PAUSE);
+        //        //to avoid status error 429 Too Many Requests
+        //        if (i % QRY_PER_SEC_ALLOWED == 0)
+        //            Thread.Sleep(MS_PAUSE);
 
-                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  THE MAGIC IS HERE :D <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                //Make asynchronous request
-                RestRequestAsyncHandle asyncHandle = null;
-                asyncHandle = rClient.ExecuteAsync<Data>(request, response => {
-                    requestList.SaveRequest(asyncHandle, response);
-                });
-                requestList.SaveRequest(asyncHandle, null);
-            }
+        //        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  THE MAGIC IS HERE :D <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        //        //Make asynchronous request
+        //        RestRequestAsyncHandle asyncHandle = null;
+        //        asyncHandle = rClient.ExecuteAsync<Data>(request, response => {
+        //            requestList.SaveRequest(asyncHandle, response);
+        //        });
+        //        requestList.SaveRequest(asyncHandle, null);
+        //    }
             
-            //Wait for requests to finish
-            Console.WriteLine("Waiting for requests");
-            if (!requestList.WaitForFinish(TIMEOUT))
-            {
-                Console.WriteLine("WARNING: Requests are taking too long to complete.");
-                requestList.CancelRequests();
-                //TODO what else?
-                //TODO test with small amount of time to force timeout, and see what happens
-            }
+        //    //Wait for requests to finish
+        //    Console.WriteLine("Waiting for requests");
+        //    if (!requestList.WaitForFinish(TIMEOUT))
+        //    {
+        //        Console.WriteLine("WARNING: Requests are taking too long to complete.");
+        //        requestList.CancelRequests();
+        //        //TODO what else?
+        //        //TODO test with small amount of time to force timeout, and see what happens
+        //    }
 
-            //Check if all requests completed successfully
-            //TODO if not ok?
-            if (!requestList.CheckStatusCodes())
-                Console.WriteLine("WARNING: Not every request completed successfully.");
+        //    //Check if all requests completed successfully
+        //    //TODO if not ok?
+        //    if (!requestList.CheckStatusCodes())
+        //        Console.WriteLine("WARNING: Not every request completed successfully.");
 
-            //Consolidate all responses
-            foreach (RestResponse<Data> r in requestList.RequestDict.Values)
-            {
-                if (!ErrorInBody(r.Data))
-                    returnedData.Append(r.Data);
-            }
+        //    //Consolidate all responses
+        //    foreach (RestResponse<Data> r in requestList.RequestDict.Values)
+        //    {
+        //        if (!ErrorInBody(r.Data))
+        //            returnedData.Append(r.Data);
+        //    }
 
-        }
+        //}
 
-        public List<Weather> RequestData2(DateTime startDate, int nDays)
+        public List<Weather> RequestData(DateTime startDate, int nDays)
         {
 
             var request = new RestRequest(API_PATH);
@@ -191,65 +192,63 @@ namespace Ficha1
                 }
             }
 
-            Console.WriteLine("null");
-
             return null;
         }
 
         //TODO: this method was replaced by RequestAsyncData(); remove this one.
         //NOTA: so disponivel dados de 1-Jul-2008 em diante; agora parece que so de ha 2 meses a esta parte
         //NOTA: exemplo do resultado: { "data": { "error": [ {"msg": "There is no weather data available for the date provided. Past data is available from 1 July, 2008 onwards only." } ] }}
-        public void RequestData()
-        {
-            //number of HTTP request necessary to obtain the data requested
-            int nReq = (GetNDaysRequested() + MAX_N_DAYS_PER_REQ - 1) / MAX_N_DAYS_PER_REQ;
+        //public void RequestData()
+        //{
+        //    //number of HTTP request necessary to obtain the data requested
+        //    int nReq = (GetNDaysRequested() + MAX_N_DAYS_PER_REQ - 1) / MAX_N_DAYS_PER_REQ;
             
-            //TODO DEBUG: show number of requests necessary to obtain all requested data
-            Console.WriteLine("Number of requests necessary: {0}", nReq); 
+        //    //TODO DEBUG: show number of requests necessary to obtain all requested data
+        //    Console.WriteLine("Number of requests necessary: {0}", nReq); 
 
-            for (int i = 0; i < nReq; ++i) //many requests as necessary to obtain all requested data
-            {
-                var rReq = new RestRequest(API_PATH);
-                rReq.RequestFormat = DataFormat.Json; //TODO: necessary?
-                rReq.RootElement = "data";
+        //    for (int i = 0; i < nReq; ++i) //many requests as necessary to obtain all requested data
+        //    {
+        //        var rReq = new RestRequest(API_PATH);
+        //        rReq.RequestFormat = DataFormat.Json; //TODO: necessary?
+        //        rReq.RootElement = "data";
 
-                //Build query string with mandatory parameters
-                rReq.AddQueryParameter("key", API_KEY);        //registered key to access API
-                //rReq.AddQueryParameter("q", localValue);       //local mandatory argument
-                rReq.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
-                rReq.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
-                //rReq.AddQueryParameter("tp", "24"); //DEBUG: for test purposes
+        //        //Build query string with mandatory parameters
+        //        rReq.AddQueryParameter("key", API_KEY);        //registered key to access API
+        //        //rReq.AddQueryParameter("q", localValue);       //local mandatory argument
+        //        rReq.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
+        //        rReq.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
+        //        //rReq.AddQueryParameter("tp", "24"); //DEBUG: for test purposes
 
-                //AddOptionalParameters();
-                AddOptionalParameters(rReq);
+        //        //AddOptionalParameters();
+        //        AddOptionalParameters(rReq);
 
-                //TODO DEBUG: print request URI
-                Console.WriteLine(rClient.BuildUri(rReq));
+        //        //TODO DEBUG: print request URI
+        //        Console.WriteLine(rClient.BuildUri(rReq));
 
 
-                //TODO: VERIFICAR CASOS DE 200 OK COM ERRO NO BODY (caso de datas anteriores a 2008)
-                //ALTERNATIVA: passar parte do codigo abaixo para este metodo novo auxiliar
-                var rResp = ExecuteRequest(rReq);
+        //        //TODO: VERIFICAR CASOS DE 200 OK COM ERRO NO BODY (caso de datas anteriores a 2008)
+        //        //ALTERNATIVA: passar parte do codigo abaixo para este metodo novo auxiliar
+        //        var rResp = ExecuteRequest(rReq);
 
-                Data wwoData;
-                if (rResp != null)
-                {
-                    wwoData = rResp.Data;
-                    if (!ErrorInBody(wwoData))
-                    {
-                        //wwoData.ShowContent(); //DEBUG: to see what is the data received
-                        returnedData.Append(wwoData);
-                    }
-                }
+        //        Data wwoData;
+        //        if (rResp != null)
+        //        {
+        //            wwoData = rResp.Data;
+        //            if (!ErrorInBody(wwoData))
+        //            {
+        //                //wwoData.ShowContent(); //DEBUG: to see what is the data received
+        //                returnedData.Append(wwoData);
+        //            }
+        //        }
 
-                if (i % QRY_PER_SEC_ALLOWED == 0) //to avoid status error 429 Too Many Requests
-                    Thread.Sleep(MS_PAUSE);
+        //        if (i % QRY_PER_SEC_ALLOWED == 0) //to avoid status error 429 Too Many Requests
+        //            Thread.Sleep(MS_PAUSE);
 
-                //TODO: parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)
-                //ao passo que nos testes do proprio site do WWO costuma ser transfer-enconding chunked
-                //parece ainda que o maximo de dias que devolve num unico pedido sao 35 dias
-            }
-        }
+        //        //TODO: parece que todos os testes feito por aqui resultam em content-encoding gzip (not transfer-enconding chunked)
+        //        //ao passo que nos testes do proprio site do WWO costuma ser transfer-enconding chunked
+        //        //parece ainda que o maximo de dias que devolve num unico pedido sao 35 dias
+        //    }
+        //}
 
         private DateTime GetStartDate()
         {
@@ -273,23 +272,22 @@ namespace Ficha1
             TimeSpan timeSpan = DateTime.Parse(end) - DateTime.Parse(start);
             int nDays = timeSpan.Days == 0 ? 1 : timeSpan.Days;
 
-            //TODO DEBUG: show number of days requested
-            Console.WriteLine("Calculated number of days (in interval): {0}", nDays); 
+            //DEBUG: show number of days requested
+            //Console.WriteLine("Calculated number of days (in interval): {0}", nDays); 
             return nDays;
         }
 
         private IRestResponse<Data> ExecuteRequest(RestRequest rReq)
         {
-            //rReq.OnBeforeDeserialization = rsp => Console.WriteLine(" ### BANG! Before deserialization. ### "); //DEBUG: test method execution before deserialization
             var resp = rClient.Execute<Data>(rReq);
 
-            //TODO DEBUG: show HTTP status code returned by server
-            Console.WriteLine("Response :: HTTP Status Code = {0}", resp.StatusCode);
+            //DEBUG: show HTTP status code returned by server
+            //Console.WriteLine("Response :: HTTP Status Code = {0}", resp.StatusCode);
 
             if (resp.ResponseStatus == ResponseStatus.Error)
                 if (resp.StatusCode == HttpStatusCode.BadRequest) //i've only witnessed this case with deserialization error/problem
                 {
-                    Console.WriteLine("### MSG: Client error - Bad Request"); //DEBUG
+                    //Console.WriteLine("### MSG: Client error - Bad Request"); //DEBUG
                     lastReqResultStatus = "400 Bad Request";
                     return null;
                 }
@@ -304,19 +302,14 @@ namespace Ficha1
             if (resp.ResponseStatus == ResponseStatus.Completed)
                 if (resp.StatusCode == HttpStatusCode.OK)
                 {
-                    Console.WriteLine("### MSG: Request OK, should have return data."); //DEBUG
+                    //Console.WriteLine("### MSG: Request OK, should have return data."); //DEBUG
                     lastReqResultStatus = "200 OK";
                 }
                 else
                 {
-                    Console.WriteLine("### MSG: {0}", resp.StatusDescription); //DEBUG
+                    //Console.WriteLine("### MSG: {0}", resp.StatusDescription); //DEBUG
                     lastReqResultStatus = resp.StatusCode.ToString();
                 }
-            //resp.ResponseStatus can still got None
-            
-            //Console.WriteLine("Response :: Content = {0}", resp.Content);
-            //Console.WriteLine("Response :: Exception = {0}", resp.ErrorException);
-            //Console.WriteLine("Response :: Message = {0}", resp.ErrorMessage);
 
             return resp;
         }
@@ -339,52 +332,52 @@ namespace Ficha1
          //TODO: the relationship between command line parameter and WWO API parameter strings should be better
          */
         //private void AddOptionalParameters() 
-        private void AddOptionalParameters(RestRequest rReq) 
-        {
-            /*
-            if (startDateValue != null)                                              //start date is defined
-            {
-                rReq.AddQueryParameter("date", startDateValue);
-                if (endDateValue != null)                                            //and end date is also defined
-                    rReq.AddQueryParameter("enddate", endDateValue);
-            }
-            else                                                                     //start date is not defined
-            {
-                rReq.AddQueryParameter("date", DateTime.Now.ToString("yyyy-MM-dd")); //then start date is current day
-                if (endDateValue != null)                                            //but end date is (the only defined)
-                    rReq.AddQueryParameter("enddate", endDateValue);
-            }
-            */
+        //private void AddOptionalParameters(RestRequest rReq) 
+        //{
+        //    /*
+        //    if (startDateValue != null)                                              //start date is defined
+        //    {
+        //        rReq.AddQueryParameter("date", startDateValue);
+        //        if (endDateValue != null)                                            //and end date is also defined
+        //            rReq.AddQueryParameter("enddate", endDateValue);
+        //    }
+        //    else                                                                     //start date is not defined
+        //    {
+        //        rReq.AddQueryParameter("date", DateTime.Now.ToString("yyyy-MM-dd")); //then start date is current day
+        //        if (endDateValue != null)                                            //but end date is (the only defined)
+        //            rReq.AddQueryParameter("enddate", endDateValue);
+        //    }
+        //    */
 
-            string start, end;
+        //    string start, end;
 
-            if (usefullArgPairs.TryGetValue(validKeys[1], out start))            //start date is defined
-            {
-                rReq.AddQueryParameter("date", start);
-                if (usefullArgPairs.TryGetValue(validKeys[2], out end))          //and end date is also defined
-                {
-                    DateTime partialEndDate = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ - 1); //set new end date to start plus the maximum number of days per request
-                    DateTime partialStartDate = partialEndDate.AddDays(1);                           //set new start date (day before new end date)
+        //    if (usefullArgPairs.TryGetValue(validKeys[1], out start))            //start date is defined
+        //    {
+        //        rReq.AddQueryParameter("date", start);
+        //        if (usefullArgPairs.TryGetValue(validKeys[2], out end))          //and end date is also defined
+        //        {
+        //            DateTime partialEndDate = DateTime.Parse(start).AddDays(MAX_N_DAYS_PER_REQ - 1); //set new end date to start plus the maximum number of days per request
+        //            DateTime partialStartDate = partialEndDate.AddDays(1);                           //set new start date (day before new end date)
 
-                    usefullArgPairs[validKeys[1]] = partialStartDate.ToString(DATE_FORMAT);         //save new start date to arguments
-                    Console.WriteLine("New start date: {0}", usefullArgPairs[validKeys[1]]);       //DEBUG: show new start date
-                    if (partialEndDate > DateTime.Parse(end))                                        //check end of requeste date interval
-                        rReq.AddQueryParameter("enddate", end);
-                    else
-                    {
-                        rReq.AddQueryParameter("enddate", partialEndDate.ToString(DATE_FORMAT));
-                        Console.WriteLine("New end date: {0}", partialEndDate.ToString(DATE_FORMAT)); //DEBUG: show new start date
-                    }
-                }
-            }
-            else                                                                         //start date is not defined
-            {
-                if (usefullArgPairs.TryGetValue(validKeys[2], out end))                  //but end date is (the only defined)
-                    rReq.AddQueryParameter("date", end);                                 //then end date will be used as the only and start date
-                else                                                                     //no date whatsoever defined
-                    rReq.AddQueryParameter("date", DateTime.Now.ToString(DATE_FORMAT)); //then start date is current day
-            }
-        }
+        //            usefullArgPairs[validKeys[1]] = partialStartDate.ToString(DATE_FORMAT);         //save new start date to arguments
+        //            Console.WriteLine("New start date: {0}", usefullArgPairs[validKeys[1]]);       //DEBUG: show new start date
+        //            if (partialEndDate > DateTime.Parse(end))                                        //check end of requeste date interval
+        //                rReq.AddQueryParameter("enddate", end);
+        //            else
+        //            {
+        //                rReq.AddQueryParameter("enddate", partialEndDate.ToString(DATE_FORMAT));
+        //                Console.WriteLine("New end date: {0}", partialEndDate.ToString(DATE_FORMAT)); //DEBUG: show new start date
+        //            }
+        //        }
+        //    }
+        //    else                                                                         //start date is not defined
+        //    {
+        //        if (usefullArgPairs.TryGetValue(validKeys[2], out end))                  //but end date is (the only defined)
+        //            rReq.AddQueryParameter("date", end);                                 //then end date will be used as the only and start date
+        //        else                                                                     //no date whatsoever defined
+        //            rReq.AddQueryParameter("date", DateTime.Now.ToString(DATE_FORMAT)); //then start date is current day
+        //    }
+        //}
 
         private HistData FilterWDataForHist(List<Weather> wData) //TODO: necessário confirmar conteúdo válido antes de evocar
         {

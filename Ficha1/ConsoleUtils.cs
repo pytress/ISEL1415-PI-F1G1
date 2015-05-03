@@ -66,7 +66,7 @@ namespace Ficha1
                                dailyAvg.EndDate.ToString(WWOClient.DATE_FORMAT));
 
             
-            Dictionary<int, double> hourlyAvgTemps = dailyAvg.GetHourlyAvgTemps();
+            Dictionary<int, int> hourlyAvgTemps = dailyAvg.AvgHourlyTemps;
             List<int> hours = hourlyAvgTemps.Keys.ToList();
             hours.Sort();
 
