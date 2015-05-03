@@ -59,21 +59,12 @@ namespace Ficha1
 
         public HistAndGraphData(string startDate, string endDate, int nHours) //TODO: podemos verificar correção de dados porque sabemos quantos dias e quantas horas
         {
-            //dayCounter = 0;
-
             this.startDate = DateTime.Parse(startDate);
             this.endDate = DateTime.Parse(endDate);
 
-            //TODO: kê?
-            //if (start.CompareTo(end) <= 0) {
-            //    this.startDate = start;
-            //    this.endDate = end;
-            //} else {
-            //    this.startDate = end;
-            //    this.endDate = start;
-            //}
-
-            daysWithData = new ArrayList((int)this.endDate.Subtract(this.startDate).TotalDays);
+            dayCounter = (int)this.endDate.Subtract(this.startDate).TotalDays;
+            dayCounter++;
+            daysWithData = new ArrayList(dayCounter);
 
             tempsCount = new Dictionary<int, TemperatureOccurences>();
             accumHourlyTemps = new Dictionary<int, int>();
@@ -189,12 +180,14 @@ namespace Ficha1
 
             foreach (int hourly in hgData.accumHourlyTemps.Keys)    //TODO acesso ao campo privado do parametro!?
             {
-                ++dayCounter;
                 if (!accumHourlyTemps.ContainsKey(hourly))
                     accumHourlyTemps.Add(hourly, hgData.accumHourlyTemps[hourly]);
                 else
                     accumHourlyTemps[hourly] += hgData.accumHourlyTemps[hourly];
             }
+
+            dayCounter += hgData.dayCounter; 
+
         }
 
         public void CalculateAvg()
@@ -202,6 +195,7 @@ namespace Ficha1
             avgHourlyTemps = new Dictionary<int,int>();
             foreach (int hour in accumHourlyTemps.Keys)
             {
+                if (dayCounter == 0) dayCounter = 1;
                 avgHourlyTemps[hour] = accumHourlyTemps[hour] / dayCounter;
             }
         }

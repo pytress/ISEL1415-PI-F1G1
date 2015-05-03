@@ -109,63 +109,6 @@ namespace Ficha1
             
         }
         
-        //public void RequestAsyncData()
-        //{
-        //    //number of HTTP request necessary to obtain the data requested
-        //    int nReq = (GetNDaysRequested() + MAX_N_DAYS_PER_REQ - 1) / MAX_N_DAYS_PER_REQ;
-
-        //    //Create list of requests
-        //    WWOAsyncRequests requestList = new WWOAsyncRequests();
-
-        //    for (int i = 0; i < nReq; ++i)
-        //    {
-        //        var request = new RestRequest(API_PATH);
-        //        request.RequestFormat = DataFormat.Json; //TODO: necessary?
-        //        request.RootElement = "data";
-
-        //        //Build query string with mandatory parameters
-        //        request.AddQueryParameter("key", API_KEY);        //registered key to access API
-        //        request.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
-        //        request.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
-        //        AddOptionalParameters(request);
-
-        //        //to avoid status error 429 Too Many Requests
-        //        if (i % QRY_PER_SEC_ALLOWED == 0)
-        //            Thread.Sleep(MS_PAUSE);
-
-        //        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  THE MAGIC IS HERE :D <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        //        //Make asynchronous request
-        //        RestRequestAsyncHandle asyncHandle = null;
-        //        asyncHandle = rClient.ExecuteAsync<Data>(request, response => {
-        //            requestList.SaveRequest(asyncHandle, response);
-        //        });
-        //        requestList.SaveRequest(asyncHandle, null);
-        //    }
-            
-        //    //Wait for requests to finish
-        //    Console.WriteLine("Waiting for requests");
-        //    if (!requestList.WaitForFinish(TIMEOUT))
-        //    {
-        //        Console.WriteLine("WARNING: Requests are taking too long to complete.");
-        //        requestList.CancelRequests();
-        //        //TODO what else?
-        //        //TODO test with small amount of time to force timeout, and see what happens
-        //    }
-
-        //    //Check if all requests completed successfully
-        //    //TODO if not ok?
-        //    if (!requestList.CheckStatusCodes())
-        //        Console.WriteLine("WARNING: Not every request completed successfully.");
-
-        //    //Consolidate all responses
-        //    foreach (RestResponse<Data> r in requestList.RequestDict.Values)
-        //    {
-        //        if (!ErrorInBody(r.Data))
-        //            returnedData.Append(r.Data);
-        //    }
-
-        //}
-
         public List<Weather> RequestData(DateTime startDate, int nDays)
         {
 
@@ -178,7 +121,7 @@ namespace Ficha1
             request.AddQueryParameter("q", usefullArgPairs[validKeys[0]]); //local mandatory argument            
             request.AddQueryParameter("format", RESP_FORMAT); //desired format for data requested
             request.AddQueryParameter("date", startDate.ToString(DATE_FORMAT));
-            request.AddQueryParameter("enddate", startDate.AddDays(nDays).ToString(DATE_FORMAT));
+            request.AddQueryParameter("enddate", startDate.AddDays(nDays-1).ToString(DATE_FORMAT));
 
             var rResp = ExecuteRequest(request);
             
@@ -269,7 +212,9 @@ namespace Ficha1
                 return 1;
 
             TimeSpan timeSpan = DateTime.Parse(end) - DateTime.Parse(start);
-            int nDays = timeSpan.Days == 0 ? 1 : timeSpan.Days;
+            //int nDays = timeSpan.Days == 0 ? 1 : timeSpan.Days;
+            //int nDays = timeSpan.Days;
+            int nDays = timeSpan.Days + 1;
 
             //DEBUG: show number of days requested
             //Console.WriteLine("Calculated number of days (in interval): {0}", nDays); 

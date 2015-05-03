@@ -38,24 +38,25 @@ namespace Ficha1
             List<int> temperatures = histogram.TempsCount.Keys.ToList();
             temperatures.Sort();
 
-            Console.WriteLine("ºC |");
+            Console.WriteLine("ºC  |");
 
             foreach (int temperature in temperatures)
             {
                 int max = histogram.TempsCount[temperature].MaxNOccurences;
                 int min = histogram.TempsCount[temperature].MinNOccurences;
 
-                Console.Write("{0} | ", temperature);
-                Console.WriteLine(max.ToString().PadLeft(max, TEMP_MAX_CHR));
+                Console.Write("{0} {1}|", temperature, TEMP_MAX_CHR);
+                Console.WriteLine(max.ToString().PadLeft(max + 1, TEMP_MAX_CHR));
 
-                Console.Write("{0} | ", temperature);
-                Console.WriteLine(min.ToString().PadLeft(min, TEMP_MIN_CHR));
+                Console.Write("{0} {1}|", temperature, TEMP_MIN_CHR);
+                Console.WriteLine(min.ToString().PadLeft(min+1, TEMP_MIN_CHR));
             
             }
 
-            Console.WriteLine("   |--------------------------------------");
-            Console.WriteLine("                               Ocorrências");
-
+            Console.WriteLine("    |--------------------------------------");
+            Console.WriteLine("                                Ocorrências");
+            Console.WriteLine("Legenda: {0} Temperaturas máximas", TEMP_MAX_CHR);
+            Console.WriteLine("         {0} Temperaturas minimas\n", TEMP_MIN_CHR);
 
         }
 
