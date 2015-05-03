@@ -94,8 +94,7 @@ namespace Ficha1
                 int days = nDays / 2;                                      
                 HistAndGraphData[] hData = new HistAndGraphData[2];
 
-                //Parallel.For(0, 2, i =>
-                for(int i = 0; i < 2; ++i)
+                Parallel.For(0, 2, i =>
                 {
                     //start depends on iteration; first half interval is always the size of the integer division
                     //the number of days can be diferent for the second half interval (if number of days is odd)
@@ -103,7 +102,7 @@ namespace Ficha1
                     int adjustedDays = days + (nDays % 2) * i;            
 
                     hData[i] = ProcessRequests(adjustedStart, adjustedDays);
-                }//);
+                });
 
                 return HistAndGraphData.Merge(hData);
             }
