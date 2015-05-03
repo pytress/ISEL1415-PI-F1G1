@@ -26,15 +26,15 @@ namespace Crawler
                 int value;
                 if (int.TryParse(args[0], out value)) {
                     url = args[1];
-                    if (value < 0) throw new ArgsException("O valor referente ao nível de profundidade é menor que Zero"); //o nivel de profundidade introduzido é menor que 0
+                    if (value < 0) throw new ArgsException("O valor referente ao nível de profundidade é menor que Zero");
                 }
 
                 else if (int.TryParse(args[1], out value))
                 {
                     url = args[0];
-                    if (value < 0) throw new ArgsException("O valor referente ao nível de profundidade é menor que Zero"); //o nivel de profundidade introduzido é menor que 0
+                    if (value < 0) throw new ArgsException("O valor referente ao nível de profundidade é menor que Zero");
                 }
-                    //qualquer coisa
+                    
                 else {                  
                     throw new ArgsException("Não introduziu nenhum valor Inteiro para o nível de profundidade");
                 }

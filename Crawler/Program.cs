@@ -18,7 +18,7 @@ namespace Crawler
         {
             Console.Clear();
         
-            Console.WriteLine("Introduza um Url e um nível de profundidade \n E.g.--> http://www.abola.pt 2 \n");
+            Console.WriteLine("Introduza um Url e um nível de profundidade \n E.g.--> http://www.isel.pt 2 \n");
             Console.Write("> ");
             string arguments = Console.ReadLine();
             try
@@ -29,7 +29,7 @@ namespace Crawler
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
                 Console.Write("\nCrawling ...");
-                crawler.Execute(); // :O  Hard work it's here!!! :'(
+                crawler.Execute(); // :O  Hard work it's here!!! 
                 
                 stopWatch.Stop();
                 TimeSpan ts = stopWatch.Elapsed;
