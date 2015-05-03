@@ -38,6 +38,7 @@ namespace Ficha1
         }
 
         private int dayCounter; //counts the number of data days the object contains
+        public int NDays { get { return dayCounter; } }
         private ArrayList daysWithData; //array to check which data days are already counted
 
         private DateTime startDate; //included start date (later) of the interval passed to the object constructor
@@ -101,7 +102,7 @@ namespace Ficha1
         }
 
         public static HistAndGraphData Merge(HistAndGraphData[] hgData)
-        { 
+        {
             string startDate = hgData[0].StartDate.ToString(WWOClient.DATE_FORMAT);
             string endDate = hgData[hgData.Length-1].EndDate.ToString(WWOClient.DATE_FORMAT);;
             int nHours = hgData[0].accumHourlyTemps.Count;
@@ -109,7 +110,7 @@ namespace Ficha1
             HistAndGraphData newHGData = new HistAndGraphData(startDate, endDate, nHours);
 
             for (int i = 0; i < hgData.Length; ++i)
-                newHGData.Append(hgData[i]);
+                    newHGData.Append(hgData[i]);
 
             return newHGData;
         }

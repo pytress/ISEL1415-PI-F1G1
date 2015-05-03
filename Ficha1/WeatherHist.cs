@@ -12,7 +12,6 @@ namespace Ficha1
 
         static void Main(string[] args)
         {
-
             //Validade args
             Dictionary<string, string> keyValuePairs = ValidateArgs(args);
 
@@ -20,6 +19,11 @@ namespace Ficha1
             WWOClient client = new WWOClient(keyValuePairs);
             HistAndGraphData wData = client.GetData();
 
+            if (wData == null)
+            {
+                ConsoleUtils.Pause("No data returned! Press key to end...");
+                return;
+            }
 
             //Print Histogram
             ConsoleUtils.PrintHistrogram(wData);
@@ -27,13 +31,22 @@ namespace Ficha1
 
             ConsoleUtils.PrintDailyAvg(wData);
             ConsoleUtils.Pause();
-            
         }
 
         static Dictionary<string, string> ValidateArgs(string[] args)
         {
-            //TODO: remove hardcoded args
-            args = new String[] { "lixo=?", "-local=Lisbon", "=", "-startdate=2015-03-30", "-enddate=2015-04-17", "xuxu=9=hy", "-asq?!" }; //TODO DEBUG: for test purposes
+            if (args.Length == 0) //no args passed/received
+            {
+                Console.WriteLine("ALERT: No arguments passed! At least a local is needed!");
+                Console.WriteLine("");
+                ConsoleUtils.Pause("A demo run will be done. Press a key...");
+                args = new String[] { "lixo=?", "-local=Lisbon", "=", "-startdate=2012-03-05", "-enddate=2015-04-17", "xuxu=9=hy", "-asq?!" };
+                Console.WriteLine("List of parameters passed:");
+                for (int idx = 0; idx < args.Length; ++idx)
+                    Console.WriteLine("{0,23}", args[idx]);
+                Console.WriteLine("");
+                ConsoleUtils.Pause();
+            }
 
             IParser<Dictionary<string, string>> parser = new WWOParser();
             Dictionary<string, string> keyValuePairs = parser.Parse(args);

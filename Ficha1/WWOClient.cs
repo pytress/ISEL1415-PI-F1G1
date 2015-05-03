@@ -26,7 +26,6 @@ namespace Ficha1
         #endregion
 
         private static readonly string[] validKeys = { "-local", "-startdate", "-enddate" };
-        //private static readonly HashSet<string> validKeys2 = new HashSet<string> { "-local", "-startdate", "-enddate" };
 
         //private string localValue;
         //private string startDateValue;
@@ -85,6 +84,8 @@ namespace Ficha1
                 //make http request
                 List<Weather> weather = RequestData(startDate, nDays);
 
+                if (weather == null) return null;
+
                 //Process data and return
                 return ProcessReceivedData(weather);
             }
@@ -95,6 +96,7 @@ namespace Ficha1
                 HistAndGraphData[] hData = new HistAndGraphData[2];
 
                 Parallel.For(0, 2, i =>
+                //for (int i = 0; i < 2; ++i)
                 {
                     //start depends on iteration; first half interval is always the size of the integer division
                     //the number of days can be diferent for the second half interval (if number of days is odd)
@@ -104,6 +106,11 @@ namespace Ficha1
                     hData[i] = ProcessRequests(adjustedStart, adjustedDays);
                 });
 
+                if (hData[0] == null && hData[1] == null) return null;
+                if (hData[0] == null) return hData[1];
+                if (hData[1] == null) return hData[0];
+                
+                //return hData.Select<HistAndGraphData>(x => x != null);
                 return HistAndGraphData.Merge(hData);
             }
             
@@ -123,8 +130,14 @@ namespace Ficha1
             request.AddQueryParameter("date", startDate.ToString(DATE_FORMAT));
             request.AddQueryParameter("enddate", startDate.AddDays(nDays-1).ToString(DATE_FORMAT));
 
+
             var rResp = ExecuteRequest(request);
-            
+            while (rResp.StatusCode.ToString().Equals("429")) //To many requests (WWO API Sucks!)
+            {
+                Thread.Sleep(MS_PAUSE);
+                rResp = ExecuteRequest(request);
+            }
+
             if (rResp != null)
             {
                 Data wwoData = rResp.Data;
