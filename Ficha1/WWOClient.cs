@@ -413,10 +413,17 @@ namespace Ficha1
         //TODO: como verificar que o resultado corresponde ao pedido (interval de datas)
         private HistAndGraphData ProcessReceivedData(List<Weather> wData)
         {
-            HistAndGraphData hgData = new HistAndGraphData(wData[0].date, wData[wData.Count - 1].date, wData[0].hourly.Count);
+            string startDate = wData[0].date;
+            string endDate = wData[wData.Count - 1].date;
+            int nHours = wData[0].hourly.Count;
+            
+            HistAndGraphData hgData = new HistAndGraphData(startDate, endDate, nHours);
 
             wData.ForEach(wElem => {
-                hgData.AddDailyTemps(int.Parse(wElem.mintempC), int.Parse(wElem.maxtempC));
+                int min = int.Parse(wElem.mintempC);
+                int max = int.Parse(wElem.maxtempC);
+                
+                hgData.AddDailyTemps(min, max);
                 //if (hgData.SetDate(wElem.date) == true)
                     foreach (Hourly hourly in wElem.hourly)
                         hgData.AddHourlyTemps(int.Parse(hourly.time), int.Parse(hourly.tempC));

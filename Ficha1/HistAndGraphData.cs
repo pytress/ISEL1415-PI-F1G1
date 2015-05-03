@@ -10,15 +10,14 @@ namespace Ficha1
     {
         public class TemperatureOccurences
         {
-            private int minNOccurences; //number of a minimum temperature occurences
+            //number of a minimum temperature occurences
+            private int minNOccurences; 
             internal int MinNOccurences { get { return minNOccurences; } }
-            private int maxNOccurences; //number of a maximum temperature occurences
+
+            //number of a maximum temperature occurences
+            private int maxNOccurences; 
             internal int MaxNOccurences { get { return maxNOccurences; } }
 
-            internal TemperatureOccurences()
-            {
-                minNOccurences = maxNOccurences = 0;
-            }
             internal TemperatureOccurences(int tMin, int tMax)
             {
                 minNOccurences = tMin; maxNOccurences = tMax;
@@ -47,7 +46,8 @@ namespace Ficha1
         public DateTime EndDate { get { return endDate; } }
 
         //TODO: renomear para dailyTempsCount
-        private Dictionary<int, TemperatureOccurences> tempsCount; //structure to hold temperature and corresponding number of minimum and maximum occurences in the date intervale
+        //structure to hold temperature and corresponding number of minimum and maximum occurences in the date intervale
+        private Dictionary<int, TemperatureOccurences> tempsCount;
         public Dictionary<int, TemperatureOccurences> TempsCount { get { return tempsCount; } }
 
         private Dictionary<int, int> accumHourlyTemps; //structure to hold hours and corresponding acummulated temperatures (from number of days defined in 'dayCounter')

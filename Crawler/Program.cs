@@ -13,9 +13,6 @@ namespace Crawler
     {
         const string SCHEMA_HTTP = "http://";
         const string SCHEMA_HTTPS = "https://";
-        private RestClient rClient;
-        private RestRequest rReq;
-
 
         static void Main(string[] args)
         {
