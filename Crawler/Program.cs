@@ -29,7 +29,7 @@ namespace Crawler
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
                 Console.Write("\nCrawling ...");
-                crawler.Execute(); // :O  Hard work it's here!!! :'(
+                crawler.Execute(); // :O  Hard work it's here!!! 
                 
                 stopWatch.Stop();
                 TimeSpan ts = stopWatch.Elapsed;

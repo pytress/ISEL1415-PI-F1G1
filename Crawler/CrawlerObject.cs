@@ -11,14 +11,12 @@ namespace Crawler
 {
     class CrawlerObject
     {
-        //dicionário que vai ter como chave uma palavra e como valor associado a ela, vai ser um conjunto de links (URL) onde a mesma se encontra 
+        //Dictionary to hold words with a list of URLs
         private IDictionary<string,List<string>> dict = new Dictionary<string,List<string>>();
 
-        //lista de Url's que terão que ser visitados
+        //List of URLs to visit
         private List<string> hrefs = new List<string>();
 
-        //public int Level { get; set; }
-        //public string Url { get; set; }
         private int level;
         private string url;
         private static List<string> visitedUrls = new List<string>();
@@ -66,10 +64,10 @@ namespace Crawler
                 resp.StatusCode != HttpStatusCode.OK)
                 return dict;
 
-            // Guardo numa string o conteúdo da resposta HTTP
+            //Save the response content
             string resp_content = resp.Content;
 
-            //Agora quero só o body da resposta HTTP
+            //Filter only the body section
             int first = resp_content.IndexOf("<body");
             int length = resp_content.IndexOf("</body>") - first + "</body>".Length;
 
@@ -88,7 +86,7 @@ namespace Crawler
                 //Index links
                 FillListWithRefs(body);
 
-                //paralel for, para executar todos os pedidos referentes às strings presentes na lista hrefs! 
+                //paralel.for to visit all the HREF's found
                 Parallel.For(0, hrefs.Count, i =>
                 //for (int i = 0; i < hrefs.Count; ++i)
                 {
@@ -145,7 +143,6 @@ namespace Crawler
             
         } //close method FillListWithRefs(string body)
 
-        //TODO This method must goes to another class
         public void FindWord(string word)
         {
             if (dict.ContainsKey(word))
