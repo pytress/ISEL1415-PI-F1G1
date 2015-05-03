@@ -38,10 +38,6 @@ namespace Crawler
         } //constructor
 
         
-        //public IDictionary<string, List<string>> GetDict() { 
-        //    return dict; 
-        //}
-
         private void Merge(IDictionary<string,List<string>> childDict) {
 
             foreach (string s in childDict.Keys)
@@ -63,33 +59,6 @@ namespace Crawler
 
         public IDictionary<string, List<string>> Execute()
         {
-
-            #region delete this
-            /* TODO
-             *      1º Percorrer a pagina corrente, e actualizar dicionario com as palavras e respectivo link corrente (Cuidado
-             *      porque só interessa os href do BODY e mesmo assim não sei se são todos!)
-             *      2º Em simultâneo, guardar hrefs numa estrututra
-             *      3º Por cada href, crio um novo Crawler filho e faço Execute() a ele
-             *              4º Crio um dicionario temporário, para guardar o dicionario do crawler filho
-             *      5º Por fim, chamamos o Merge Do pai, passando como argumento o dicionário do filho!
-             * 
-             * */
-
-
-
-
-            /* isto tudo dentro do ciclo q percorre os Hrefs a visitar
-            
-            crawler1
-
-            crawler 2 = new Crawler ("/sporting",--level);
-            crawler2.Execute()
-            Dictionary temp =  crawler2.GetDict();
-
-            crawler1.Merge(temp);   */
-
-            #endregion
-
             RestResponse resp = (RestResponse)client.Execute(req);
             //Validate response content
             if (resp.Content == "" ||
@@ -101,7 +70,7 @@ namespace Crawler
             string resp_content = resp.Content;
 
             //Agora quero só o body da resposta HTTP
-            int first = resp_content.IndexOf("<body>");
+            int first = resp_content.IndexOf("<body");
             int length = resp_content.IndexOf("</body>") - first + "</body>".Length;
 
             string body;
@@ -174,6 +143,7 @@ namespace Crawler
             
         } //close method FillListWithRefs(string body)
 
+        //TODO This method must goes to another class
         public void FindWord(string word)
         {
             if (dict.ContainsKey(word))
@@ -184,9 +154,15 @@ namespace Crawler
                 }
             }
             else {
-                Console.WriteLine("The word was not found!");
+                Console.WriteLine("Palavra não encontrada");
             }
         }//method FindWord
+
+
+        public int CountWords()
+        {
+            return dict.Count;
+        }
 
     }//close class
 }

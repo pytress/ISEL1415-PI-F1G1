@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
 using Crawler.MyExceptions;
+using System.Diagnostics;
 
 namespace Crawler
 {
@@ -28,10 +29,19 @@ namespace Crawler
                 IParser<CrawlerObject> parser = new CrawlerParser();
                 CrawlerObject crawler = parser.Parse(arguments);
 
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
                 Console.Write("\nCrawling ...");
                 crawler.Execute(); // :O  Hard work it's here!!! :'(
+                
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                    ts.Hours, ts.Minutes, ts.Seconds,
+                    ts.Milliseconds / 10);
 
-                Console.WriteLine("\n\nIndique a palavra a pesquisar (escreva \"sair\" para terminar)\n");
+                Console.WriteLine("\n\nForam indexadas {0} palavras em {1} segundos", crawler.CountWords(), elapsedTime);
+                Console.WriteLine("Indique a palavra a pesquisar (escreva \"sair\" para terminar)\n");
                 Console.Write("> ");
                 String word = Console.ReadLine();
                 while (word != "sair")
@@ -49,14 +59,6 @@ namespace Crawler
                 Console.WriteLine(excep.ToString());
             }
 
-            /* Other Catch Block to treat the exceptions Goes Here...  :D   :D 
-
-                           ..................... */
-
-            finally {
-                //Console.WriteLine("Press any key to exit :)");
-                //Console.ReadKey();
-            }
 
         }//MAIN
     }//class
