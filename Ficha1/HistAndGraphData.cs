@@ -110,7 +110,7 @@ namespace Ficha1
 
             for (int i = 0; i < hgData.Length; ++i)
                 newHGData.Append(hgData[i]);
-            
+
             return newHGData;
         }
 
@@ -185,9 +185,6 @@ namespace Ficha1
                 else
                     accumHourlyTemps[hourly] += hgData.accumHourlyTemps[hourly];
             }
-
-            dayCounter += hgData.dayCounter; 
-
         }
 
         public void CalculateAvg()

@@ -71,12 +71,12 @@ namespace Ficha1
             List<int> hours = hourlyAvgTemps.Keys.ToList();
             hours.Sort();
 
-            Console.WriteLine("H |");
+            Console.WriteLine(" H |");
 
             foreach (int hour in hours)
             {
                 int avg = (int)hourlyAvgTemps[hour];
-                Console.Write("{0} | ", hour);
+                Console.Write("{0,2} | ", hour/100);
                 Console.WriteLine(avg.ToString().PadLeft(avg, AVG_TEMP_CHR));
             }
 

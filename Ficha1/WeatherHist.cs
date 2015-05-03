@@ -33,7 +33,7 @@ namespace Ficha1
         static Dictionary<string, string> ValidateArgs(string[] args)
         {
             //TODO: remove hardcoded args
-            args = new String[] { "lixo=?", "-local=Lisbon", "=", "-startdate=2015-04-01", "-enddate=2015-04-01", "xuxu=9=hy", "-asq?!" }; //TODO DEBUG: for test purposes
+            args = new String[] { "lixo=?", "-local=Lisbon", "=", "-startdate=2015-03-30", "-enddate=2015-04-17", "xuxu=9=hy", "-asq?!" }; //TODO DEBUG: for test purposes
 
             IParser<Dictionary<string, string>> parser = new WWOParser();
             Dictionary<string, string> keyValuePairs = parser.Parse(args);
