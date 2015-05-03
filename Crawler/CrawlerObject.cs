@@ -79,12 +79,15 @@ namespace Crawler
             else
                 body = resp_content.Substring(first, length);
 
-            //TODO this must be done at the same time, not separatelly
-            FillListWithRefs(body);
+
+            //Index words
             FillDictWithWords(body);
 
             if (level > 0)
             {
+                //Index links
+                FillListWithRefs(body);
+
                 //paralel for, para executar todos os pedidos referentes às strings presentes na lista hrefs! 
                 Parallel.For(0, hrefs.Count, i =>
                 //for (int i = 0; i < hrefs.Count; ++i)
@@ -116,12 +119,10 @@ namespace Crawler
             }
         }
 
-
-
         private void FillListWithRefs(string body) {
             if (body == null || body.Length < 1) return;
 
-            Match m = Regex.Match(body, @"<a.*?href=\""(.*?)\""", RegexOptions.Singleline);
+            Match m = Regex.Match(body, "href=\"([^\"]*)\"", RegexOptions.IgnoreCase);
 
             while (m.Success)
             {
