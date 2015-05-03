@@ -61,8 +61,8 @@ namespace Ficha1
         {
             //dayCounter = 0;
 
-            DateTime start = DateTime.Parse(startDate);
-            DateTime end = DateTime.Parse(endDate);
+            this.startDate = DateTime.Parse(startDate);
+            this.endDate = DateTime.Parse(endDate);
 
             //TODO: kê?
             //if (start.CompareTo(end) <= 0) {
