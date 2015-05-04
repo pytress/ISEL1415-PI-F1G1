@@ -20,8 +20,9 @@ namespace Ficha1
         private const int DEFAULT_TIME_INTERVAL = 3;
         private const int MAX_N_DAYS_PER_REQ = 10;
         private const int QRY_PER_SEC_ALLOWED = 5;
-        private const int MS_PAUSE = 5000;
+        private const int MS_PAUSE = 1000;
         private const int TIMEOUT = 5000;
+        private const int MAX_REQUEST_REPEATS = 5;
         public const string DATE_FORMAT = "yyyy-MM-dd";
         #endregion
 
@@ -114,12 +115,16 @@ namespace Ficha1
             var rResp = ExecuteRequest(request);
             if (rResp == null) return null; //No data to desserialize; happens when WWO API returns 400 Bad Request
 
-            while (lastReqResultStatus == "429") //429 Too Many Requests (WWO API Sucks!); there is no HttpStatusCode for 429
+            //429 Too Many Requests (WWO API Sucks!); there is no HttpStatusCode for 429
+            for(int i = 0; lastReqResultStatus == "429" && i < MAX_REQUEST_REPEATS; ++i)
             {
                 Thread.Sleep(MS_PAUSE);
                 rResp = ExecuteRequest(request);
-                Console.WriteLine("Too many requests. Waiting for response...");
             }
+
+            if (lastReqResultStatus == "429" )
+                Console.WriteLine("Too many requests. I give up...");
+
             if (rResp == null) return null;
 
             Data wwoData = rResp.Data;
